@@ -1,0 +1,56 @@
+/* Status */
+"status.searching" = "Looking for the scanner…";
+"status.notfound" = "Scanner not found";
+
+/* Empty state */
+"empty.title.ready" = "Ready to Scan";
+"empty.subtitle.ready" = "Put the pages in the feeder, then press Scan.";
+"empty.title.notfound" = "Scanner Not Found";
+"empty.subtitle.notfound" = "Connect the scanner with its USB cable and turn it on.";
+
+/* Options panel */
+"panel.kind" = "Kind";
+"kind.color" = "Color";
+"kind.gray" = "Grayscale";
+"kind.bw" = "Black & White";
+"panel.resolution" = "Resolution";
+"panel.paper" = "Paper Size";
+"paper.letter" = "Letter";
+"paper.legal" = "Legal";
+"panel.duplex" = "Scan both sides";
+"panel.deskew" = "Straighten pages automatically";
+"panel.skipblank" = "Skip blank pages";
+"panel.format" = "Format";
+"format.searchablePDF" = "PDF (searchable)";
+"panel.saveto" = "Save to";
+"saveto.documents" = "Documents";
+"saveto.desktop" = "Desktop";
+"saveto.downloads" = "Downloads";
+"saveto.other" = "Other…";
+"panel.name" = "Name";
+"name.default" = "Scan";
+
+/* Buttons */
+"button.scan" = "Scan";
+"button.cancel" = "Cancel";
+"button.clear" = "Clear";
+"button.showInFinder" = "Show in Finder";
+
+/* Progress */
+"progress.page %d" = "Scanning page %d…";
+"progress.saving" = "Saving…";
+"progress.ocr" = "Recognizing text…";
+
+/* Messages */
+"msg.feederEmpty" = "No paper in the feeder. Load the pages and try again.";
+"msg.saved %@" = "Saved: %@";
+"msg.savedMultiple %d" = "%d files";
+"page.caption %d" = "Page %d";
+
+/* Errors */
+"error.title" = "Scan Problem";
+"error.noScanner" = "The scanner is not connected. Check the USB cable and that it is turned on.";
+"error.jam" = "Paper jam. Open the scanner, remove the pages, and try again.";
+"error.coverOpen" = "The scanner cover is open. Close it and try again.";
+"error.decode" = "The scanned image could not be processed.";
+"error.generic %@" = "Something went wrong: %@";

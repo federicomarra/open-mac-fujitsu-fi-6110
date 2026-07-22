@@ -1,0 +1,56 @@
+/* Status */
+"status.searching" = "Ricerca dello scanner…";
+"status.notfound" = "Scanner non trovato";
+
+/* Empty state */
+"empty.title.ready" = "Pronto per la scansione";
+"empty.subtitle.ready" = "Inserisci i fogli nell'alimentatore e premi Scansiona.";
+"empty.title.notfound" = "Scanner non trovato";
+"empty.subtitle.notfound" = "Collega lo scanner con il cavo USB e accendilo.";
+
+/* Options panel */
+"panel.kind" = "Tipo";
+"kind.color" = "Colore";
+"kind.gray" = "Scala di grigi";
+"kind.bw" = "Bianco e nero";
+"panel.resolution" = "Risoluzione";
+"panel.paper" = "Dimensioni";
+"paper.letter" = "Letter";
+"paper.legal" = "Legal";
+"panel.duplex" = "Fronte-retro";
+"panel.deskew" = "Raddrizza automaticamente le pagine";
+"panel.skipblank" = "Salta le pagine vuote";
+"panel.format" = "Formato";
+"format.searchablePDF" = "PDF (ricercabile)";
+"panel.saveto" = "Salva in";
+"saveto.documents" = "Documenti";
+"saveto.desktop" = "Scrivania";
+"saveto.downloads" = "Download";
+"saveto.other" = "Altra cartella…";
+"panel.name" = "Nome";
+"name.default" = "Scansione";
+
+/* Buttons */
+"button.scan" = "Scansiona";
+"button.cancel" = "Annulla";
+"button.clear" = "Svuota";
+"button.showInFinder" = "Mostra nel Finder";
+
+/* Progress */
+"progress.page %d" = "Scansione pagina %d…";
+"progress.saving" = "Salvataggio…";
+"progress.ocr" = "Riconoscimento del testo…";
+
+/* Messages */
+"msg.feederEmpty" = "Nessun foglio nell'alimentatore. Carica le pagine e riprova.";
+"msg.saved %@" = "Salvato: %@";
+"msg.savedMultiple %d" = "%d file";
+"page.caption %d" = "Pagina %d";
+
+/* Errors */
+"error.title" = "Problema di scansione";
+"error.noScanner" = "Lo scanner non è collegato. Controlla il cavo USB e che sia acceso.";
+"error.jam" = "Carta inceppata. Apri lo scanner, rimuovi i fogli e riprova.";
+"error.coverOpen" = "Lo sportello dello scanner è aperto. Chiudilo e riprova.";
+"error.decode" = "Non è stato possibile elaborare l'immagine scansionata.";
+"error.generic %@" = "Si è verificato un errore: %@";
