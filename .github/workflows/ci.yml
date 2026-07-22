@@ -1,0 +1,112 @@
+name: Build & Release
+
+# Every push to main (and manual runs) bump the version by +0.1, build the
+# universal .app, and publish the .dmg as both a GitHub Release and a workflow
+# artifact. The version lives in the root VERSION file (absent => 1.0).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write            # push the VERSION commit + tag, create the Release
+
+concurrency:
+  group: release-main        # serialize runs so the version bump can't race
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-14        # Apple Silicon; cross-compiles the x86_64 slice too
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history + tags, so release notes can list commits
+
+      - name: Compute next version
+        run: |
+          if [ -f VERSION ]; then
+            cur=$(tr -d '[:space:]' < VERSION)
+            new=$(awk -v v="$cur" 'BEGIN{printf "%.1f", v + 0.1}')   # 1.9 -> 2.0
+          else
+            new=1.0                                                  # first release
+          fi
+          echo "VERSION=$new" >> "$GITHUB_ENV"
+          echo "Building version $new"
+
+      - name: Install pkg-config
+        run: brew install pkgconf   # the SANE vendor build uses it to find libusb
+
+      - name: Cache vendor libraries
+        uses: actions/cache@v4
+        with:
+          path: |
+            vendor/out
+            vendor/src
+          key: vendor-${{ runner.os }}-${{ hashFiles('vendor/build-sane.sh') }}
+
+      - name: Build vendor libraries (if not cached)
+        run: test -f vendor/out/lib/libsane-fujitsu.so || vendor/build-sane.sh
+
+      - name: Stamp version into Info.plist
+        run: |
+          plist=packaging/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "$plist"
+
+      - name: Build app + DMG
+        run: |
+          packaging/make-icon.sh
+          packaging/make-app.sh
+          packaging/make-dmg.sh
+
+      - name: Name the DMG for this version
+        run: cp "dist/fi-6110 Scanner.dmg" "dist/fi-6110 Scanner ${VERSION}.dmg"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fi-6110-Scanner-${{ env.VERSION }}
+          path: dist/fi-6110 Scanner ${{ env.VERSION }}.dmg
+          if-no-files-found: error
+
+      - name: Commit bumped VERSION back to main
+        run: |
+          echo "$VERSION" > VERSION
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "chore: release v$VERSION [skip ci]"
+          git push origin HEAD:main
+
+      - name: Tag and publish Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Capture the previous release tag BEFORE creating the new one, so the
+          # changelog covers exactly the commits added since the last release.
+          prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+
+          if [ -n "$prev_tag" ]; then range="$prev_tag..HEAD"; else range=""; fi
+
+          # Release notes from real commit subjects, minus the [skip ci] bump commit.
+          {
+            echo "## Novità in questa versione / What's changed"
+            echo ""
+            git log $range --no-merges --pretty=format:'- %s' \
+              | grep -v '\[skip ci\]' || echo "- Prima versione."
+            echo ""
+            echo ""
+            echo "---"
+            echo "Trascina l'app in **Applicazioni**. Al primo avvio: clic destro sull'app → **Apri**."
+            echo "_(Drag the app to Applications; on first launch right-click the app → Open.)_"
+          } > release-notes.md
+
+          gh release create "v$VERSION" "dist/fi-6110 Scanner ${VERSION}.dmg" \
+            --title "fi-6110 Scanner v$VERSION" \
+            --notes-file release-notes.md

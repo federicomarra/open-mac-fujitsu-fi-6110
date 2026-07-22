@@ -1,5 +1,7 @@
 # fi-6110 Scanner
 
+[![Build & Release](https://github.com/federicomarra/open-mac-fujitsu-fi-6110/actions/workflows/ci.yml/badge.svg)](https://github.com/federicomarra/open-mac-fujitsu-fi-6110/actions/workflows/ci.yml)
+
 A native macOS app that brings the **Fujitsu fi-6110** USB document scanner back
 to life on modern Macs. Fujitsu stopped supporting the fi-6110 at macOS 10.14,
 so this app bundles the open-source [SANE](http://www.sane-project.org)
