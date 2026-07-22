@@ -2,17 +2,18 @@ name: Build & Release
 
 # Every push to main (and manual runs) bump the version by +0.1, build the
 # universal .app, and publish the .dmg as both a GitHub Release and a workflow
-# artifact. The version lives in the root VERSION file (absent => 1.0).
+# artifact. The version is derived from the latest git tag (no tags => 1.0);
+# CI never commits back to the repo — it only pushes the tag and the Release.
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write            # push the VERSION commit + tag, create the Release
+  contents: write            # push the version tag and create the Release
 
 concurrency:
-  group: release-main        # serialize runs so the version bump can't race
+  group: release-main        # serialize runs so two releases can't race
   cancel-in-progress: false
 
 jobs:
@@ -27,14 +28,17 @@ jobs:
 
       - name: Compute next version
         run: |
-          if [ -f VERSION ]; then
-            cur=$(tr -d '[:space:]' < VERSION)
-            new=$(awk -v v="$cur" 'BEGIN{printf "%.1f", v + 0.1}')   # 1.9 -> 2.0
+          # Highest existing tag is the source of truth (checkout fetched all
+          # tags via fetch-depth: 0). Strip the leading v, add 0.1. No tags => 1.0.
+          latest=$(git tag --list 'v*' --sort=-version:refname | head -n1)
+          if [ -n "$latest" ]; then
+            new=$(awk -v v="${latest#v}" 'BEGIN{printf "%.1f", v + 0.1}')   # v1.9 -> 2.0
           else
-            new=1.0                                                  # first release
+            new=1.0                                                          # first release
           fi
-          echo "VERSION=$new" >> "$GITHUB_ENV"
-          echo "Building version $new"
+          echo "VERSION=$new"       >> "$GITHUB_ENV"
+          echo "LATEST_TAG=$latest" >> "$GITHUB_ENV"   # reused as the changelog base
+          echo "Building version $new (from tag '${latest:-none}')"
 
       - name: Install pkg-config
         run: brew install pkgconf   # the SANE vendor build uses it to find libusb
@@ -72,29 +76,18 @@ jobs:
           path: dist/fi-6110 Scanner ${{ env.VERSION }}.dmg
           if-no-files-found: error
 
-      - name: Commit bumped VERSION back to main
-        run: |
-          echo "$VERSION" > VERSION
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add VERSION
-          git commit -m "chore: release v$VERSION [skip ci]"
-          git push origin HEAD:main
-
       - name: Tag and publish Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Capture the previous release tag BEFORE creating the new one, so the
-          # changelog covers exactly the commits added since the last release.
-          prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-
+          # Tag the pushed commit; the changelog base is the previous latest tag
+          # captured in "Compute next version" (empty on the first release).
           git tag "v$VERSION"
           git push origin "v$VERSION"
 
-          if [ -n "$prev_tag" ]; then range="$prev_tag..HEAD"; else range=""; fi
+          range="${LATEST_TAG:+$LATEST_TAG..HEAD}"
 
-          # Release notes from real commit subjects, minus the [skip ci] bump commit.
+          # Release notes from real commit subjects since the previous tag.
           {
             echo "## Novità in questa versione / What's changed"
             echo ""
