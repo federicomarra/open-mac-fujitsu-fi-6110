@@ -87,7 +87,8 @@ final class ScannerViewModel: ObservableObject {
     private func startPolling() {
         probeNow()
         pollTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.probeNow() }
+            guard let self else { return }
+            Task { @MainActor in self.probeNow() }
         }
     }
 
@@ -134,12 +135,13 @@ final class ScannerViewModel: ObservableObject {
         let outputFormat = format
         let directory = saveFolder
         let baseName = fileName
+        let finalSettings = settings
 
         workQueue.async { [weak self] in
             guard let self = self else { return }
             var collected: [ScannedPage] = []
             do {
-                let count = try self.scanner.scan(settings: settings, onProgress: { page, fraction in
+                let count = try self.scanner.scan(settings: finalSettings, onProgress: { page, fraction in
                     Task { @MainActor in
                         self.activity = .scanning(page: page, progress: fraction)
                     }
