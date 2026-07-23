@@ -193,7 +193,7 @@ private struct OptionsPanel: View {
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "folder")
-                    Text(model.saveFolder.lastPathComponent)
+                    Text(model.saveFolderDisplayName)
                         .lineLimit(1)
                 }
             }

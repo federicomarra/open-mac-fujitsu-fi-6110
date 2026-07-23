@@ -54,10 +54,45 @@ final class ScannerViewModel: ObservableObject {
 
     init() {
         scanner = Self.makeScanner()
-        saveFolder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-            ?? FileManager.default.homeDirectoryForCurrentUser
-        fileName = L("name.default")
+        // Seed the current selections from the user's saved defaults (Settings).
+        mode = AppDefaults.mode
+        resolution = AppDefaults.resolution
+        paperSize = AppDefaults.paperSize
+        duplex = AppDefaults.duplex
+        deskew = AppDefaults.deskew
+        skipBlankPages = AppDefaults.skipBlank
+        format = AppDefaults.format
+        saveFolder = AppDefaults.saveFolder
+        fileName = Self.defaultFileName()
         startPolling()
+    }
+
+    /// Default document name: today's date plus the localized "scan" word,
+    /// e.g. "2026-07-23-scansione". POSIX locale keeps the digits stable.
+    static func defaultFileName() -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return "\(formatter.string(from: Date()))-\(L("name.suffix"))"
+    }
+
+    /// Display name of the save folder in the app's language (e.g. "Documenti"
+    /// rather than the on-disk "Documents"). Standard folders use the app's own
+    /// translations — the same ones the picker menu shows — because the system's
+    /// folder localization does not reliably follow the app's language; custom
+    /// folders fall back to their real name.
+    var saveFolderDisplayName: String {
+        let fm = FileManager.default
+        func matches(_ directory: FileManager.SearchPathDirectory) -> Bool {
+            guard let url = fm.urls(for: directory, in: .userDomainMask).first else { return false }
+            return url.standardizedFileURL.path == saveFolder.standardizedFileURL.path
+        }
+        if matches(.documentDirectory) { return L("saveto.documents") }
+        if matches(.desktopDirectory) { return L("saveto.desktop") }
+        if matches(.downloadsDirectory) { return L("saveto.downloads") }
+        let name = fm.displayName(atPath: saveFolder.path)
+        return name.isEmpty ? saveFolder.lastPathComponent : name
     }
 
     /// In the packaged app the SANE module + config live inside the bundle;

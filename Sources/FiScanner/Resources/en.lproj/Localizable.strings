@@ -21,7 +21,7 @@
 "panel.deskew" = "Straighten pages automatically";
 "panel.skipblank" = "Skip blank pages";
 "panel.format" = "Format";
-"format.searchablePDF" = "PDF (searchable)";
+"format.searchablePDF" = "PDF (OCR)";
 "panel.saveto" = "Save to";
 "saveto.documents" = "Documents";
 "saveto.desktop" = "Desktop";
@@ -54,3 +54,40 @@
 "error.coverOpen" = "The scanner cover is open. Close it and try again.";
 "error.decode" = "The scanned image could not be processed.";
 "error.generic %@" = "Something went wrong: %@";
+
+/* Default document name: <date>-<suffix>, e.g. 2026-07-23-scan */
+"name.suffix" = "scan";
+
+/* Menu */
+"menu.settings" = "Settings…";
+"menu.tutorial" = "How to Use fi-6110 Scanner";
+
+/* Settings window */
+"settings.title" = "Settings";
+"settings.header" = "Default settings";
+"settings.subtitle" = "Choose the options the app uses automatically each time you open it. You can still change them before any scan.";
+"settings.section.scan" = "Scan";
+"settings.section.output" = "Output";
+"settings.savefolder" = "Default folder";
+"settings.choose" = "Choose…";
+"settings.reset" = "Reset";
+
+/* Tutorial window */
+"tutorial.title" = "How to Use fi-6110 Scanner";
+"tutorial.intro" = "This guide shows you, step by step, how to digitize your documents with the Fujitsu fi-6110 scanner.";
+"tut.connect.t" = "Connect the scanner";
+"tut.connect.b" = "Connect the scanner to your Mac with the USB cable and turn it on. When the dot at the top right turns green, the scanner is ready. If it stays orange, check the cable and that it's powered on, then wait a few seconds.";
+"tut.load.t" = "Load the pages";
+"tut.load.b" = "Put the sheets in the automatic feeder, text facing you and the top edge down. You can load several sheets at once: they'll be scanned one after another.";
+"tut.options.t" = "Choose the options";
+"tut.options.b" = "On the right, choose the kind (color, grayscale or black & white), the resolution in dpi (higher means more detail but larger files) and the paper size. Turn on “Scan both sides” to capture both faces in a single pass.";
+"tut.format.t" = "Choose the file format";
+"tut.format.b" = "“PDF” makes a single document with all pages. “PDF (searchable)” adds text recognition, so you can search and copy the words in the document. JPEG, PNG and TIFF instead make one image per page.";
+"tut.extras.t" = "Handy options";
+"tut.extras.b" = "“Skip blank pages” automatically drops empty backsides when scanning both sides. “Straighten automatically” corrects sheets that went in slightly skewed.";
+"tut.save.t" = "Where the files go";
+"tut.save.b" = "Under “Save to” pick the folder (usually Documents). “Name” already contains today's date: change it however you like. If a file with the same name already exists, a new one is created without overwriting the old one.";
+"tut.defaults.t" = "Set your defaults";
+"tut.defaults.b" = "From “fi-6110 Scanner ▸ Settings…” (⌘,) you can choose the options you want ready every time you open the app: kind, resolution, both sides, format and more.";
+"tut.trouble.t" = "If something goes wrong";
+"tut.trouble.b" = "“Scanner not found”: check the USB cable and that the scanner is on. “Paper jam”: open the scanner, remove the sheets and try again. Remember to load the sheets in the feeder before pressing “Scan”.";

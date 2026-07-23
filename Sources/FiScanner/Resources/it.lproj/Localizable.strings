@@ -21,7 +21,7 @@
 "panel.deskew" = "Raddrizza automaticamente le pagine";
 "panel.skipblank" = "Salta le pagine vuote";
 "panel.format" = "Formato";
-"format.searchablePDF" = "PDF (ricercabile)";
+"format.searchablePDF" = "PDF (OCR)";
 "panel.saveto" = "Salva in";
 "saveto.documents" = "Documenti";
 "saveto.desktop" = "Scrivania";
@@ -54,3 +54,40 @@
 "error.coverOpen" = "Lo sportello dello scanner è aperto. Chiudilo e riprova.";
 "error.decode" = "Non è stato possibile elaborare l'immagine scansionata.";
 "error.generic %@" = "Si è verificato un errore: %@";
+
+/* Default document name: <date>-<suffix>, e.g. 2026-07-23-scansione */
+"name.suffix" = "scansione";
+
+/* Menu */
+"menu.settings" = "Impostazioni…";
+"menu.tutorial" = "Come usare fi-6110 Scanner";
+
+/* Settings window */
+"settings.title" = "Impostazioni";
+"settings.header" = "Impostazioni predefinite";
+"settings.subtitle" = "Scegli le opzioni che l'app userà automaticamente ogni volta che la apri. Potrai comunque modificarle prima di ogni scansione.";
+"settings.section.scan" = "Scansione";
+"settings.section.output" = "Salvataggio";
+"settings.savefolder" = "Cartella predefinita";
+"settings.choose" = "Scegli…";
+"settings.reset" = "Ripristina";
+
+/* Tutorial window */
+"tutorial.title" = "Come usare fi-6110 Scanner";
+"tutorial.intro" = "Questa guida ti mostra passo dopo passo come digitalizzare i tuoi documenti con lo scanner Fujitsu fi-6110.";
+"tut.connect.t" = "Collega lo scanner";
+"tut.connect.b" = "Collega lo scanner al Mac con il cavo USB e accendilo. Quando in alto a destra il pallino diventa verde, lo scanner è pronto. Se resta arancione, controlla il cavo e che sia acceso, poi attendi qualche secondo.";
+"tut.load.t" = "Inserisci i fogli";
+"tut.load.b" = "Metti i fogli nell'alimentatore automatico, con il testo rivolto verso di te e il bordo superiore in basso. Puoi caricare più fogli insieme: verranno acquisiti uno dopo l'altro.";
+"tut.options.t" = "Scegli le opzioni";
+"tut.options.b" = "A destra scegli il tipo (colore, scala di grigi o bianco e nero), la risoluzione in dpi (più alta significa più dettaglio ma file più grandi) e le dimensioni del foglio. Attiva «Fronte-retro» per acquisire entrambi i lati in un solo passaggio.";
+"tut.format.t" = "Scegli il formato del file";
+"tut.format.b" = "«PDF» crea un unico documento con tutte le pagine. «PDF (ricercabile)» aggiunge il riconoscimento del testo, così potrai cercare e copiare le parole nel documento. JPEG, PNG e TIFF creano invece un'immagine per ogni pagina.";
+"tut.extras.t" = "Opzioni utili";
+"tut.extras.b" = "«Salta le pagine vuote» elimina automaticamente i retro bianchi quando acquisisci in fronte-retro. «Raddrizza automaticamente» corregge i fogli entrati un po' storti.";
+"tut.save.t" = "Dove finiscono i file";
+"tut.save.b" = "In «Salva in» scegli la cartella (di solito Documenti). In «Nome» c'è già la data di oggi: puoi cambiarla come preferisci. Se esiste già un file con lo stesso nome, ne viene creato uno nuovo senza sovrascrivere quello vecchio.";
+"tut.defaults.t" = "Imposta i tuoi valori predefiniti";
+"tut.defaults.b" = "Dal menu «fi-6110 Scanner ▸ Impostazioni…» (⌘,) puoi decidere le opzioni che vuoi trovare già pronte ogni volta che apri l'app: tipo, risoluzione, fronte-retro, formato e altro.";
+"tut.trouble.t" = "Se qualcosa non va";
+"tut.trouble.b" = "«Scanner non trovato»: controlla il cavo USB e che lo scanner sia acceso. «Carta inceppata»: apri lo scanner, togli i fogli e riprova. Ricorda di mettere i fogli nell'alimentatore prima di premere «Scansiona».";
