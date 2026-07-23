@@ -66,23 +66,23 @@ jobs:
           packaging/make-app.sh
           packaging/make-dmg.sh
 
-      - name: Name the DMG for this version
-        run: cp "dist/fi-6110 Scanner.dmg" "dist/fi-6110 Scanner ${VERSION}.dmg"
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v6
         with:
           name: fi-6110-Scanner-${{ env.VERSION }}
-          path: dist/fi-6110 Scanner ${{ env.VERSION }}.dmg
+          path: dist/fi-6110 Scanner.dmg
           if-no-files-found: error
 
       - name: Tag and publish Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Tag the pushed commit; the changelog base is the previous latest tag
-          # captured in "Compute next version" (empty on the first release).
-          git tag "v$VERSION"
+          # Tag the pushed commit under my identity: an annotated tag records the
+          # tagger (me), not github-actions. Changelog base is the previous latest
+          # tag captured in "Compute next version" (empty on the first release).
+          git config user.name  "Federico Marra"
+          git config user.email "fecrom@gmail.com"
+          git tag -a "v$VERSION" -m "fi-6110 Scanner v$VERSION"
           git push origin "v$VERSION"
 
           range="${LATEST_TAG:+$LATEST_TAG..HEAD}"
@@ -100,6 +100,6 @@ jobs:
             echo "_(Drag the app to Applications; on first launch right-click the app → Open.)_"
           } > release-notes.md
 
-          gh release create "v$VERSION" "dist/fi-6110 Scanner ${VERSION}.dmg" \
+          gh release create "v$VERSION" "dist/fi-6110 Scanner.dmg" \
             --title "fi-6110 Scanner v$VERSION" \
             --notes-file release-notes.md
