@@ -6,6 +6,7 @@ enum DefaultsKey {
     static let mode = "defaultMode"
     static let resolution = "defaultResolution"
     static let paperSize = "defaultPaperSize"
+    static let autoRotate = "defaultAutoRotate"
     static let duplex = "defaultDuplex"
     static let deskew = "defaultDeskew"
     static let skipBlank = "defaultSkipBlank"
@@ -24,6 +25,9 @@ enum AppDefaults {
             DefaultsKey.mode: ScanColorMode.color.rawValue,
             DefaultsKey.resolution: 300,
             DefaultsKey.paperSize: PaperSize.a4.rawValue,
+            // Auto-rotate leans on Apple Vision, which is fast on Apple Silicon
+            // but slow on Intel — so it starts on only on Apple Silicon.
+            DefaultsKey.autoRotate: isAppleSilicon,
             DefaultsKey.duplex: true,
             DefaultsKey.deskew: true,
             DefaultsKey.skipBlank: true,
@@ -31,6 +35,14 @@ enum AppDefaults {
             DefaultsKey.saveFolderPath: "",
         ])
     }
+
+    /// True on Apple Silicon hardware (also under Rosetta), false on Intel.
+    static let isAppleSilicon: Bool = {
+        var value: Int32 = 0
+        var size = MemoryLayout<Int32>.size
+        guard sysctlbyname("hw.optional.arm64", &value, &size, nil, 0) == 0 else { return false }
+        return value == 1
+    }()
 
     private static var store: UserDefaults { .standard }
 
@@ -44,6 +56,7 @@ enum AppDefaults {
     static var paperSize: PaperSize {
         PaperSize(rawValue: store.string(forKey: DefaultsKey.paperSize) ?? "") ?? .a4
     }
+    static var autoRotate: Bool { store.bool(forKey: DefaultsKey.autoRotate) }
     static var duplex: Bool { store.bool(forKey: DefaultsKey.duplex) }
     static var deskew: Bool { store.bool(forKey: DefaultsKey.deskew) }
     static var skipBlank: Bool { store.bool(forKey: DefaultsKey.skipBlank) }

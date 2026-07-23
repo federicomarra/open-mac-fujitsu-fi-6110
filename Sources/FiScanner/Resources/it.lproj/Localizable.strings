@@ -18,6 +18,7 @@
 "paper.letter" = "Letter";
 "paper.legal" = "Legal";
 "panel.duplex" = "Fronte-retro";
+"panel.autorotate" = "Ruota automaticamente le pagine";
 "panel.deskew" = "Raddrizza automaticamente le pagine";
 "panel.skipblank" = "Salta le pagine vuote";
 "panel.format" = "Formato";
@@ -84,7 +85,7 @@
 "tut.format.t" = "Scegli il formato del file";
 "tut.format.b" = "«PDF» crea un unico documento con tutte le pagine. «PDF (ricercabile)» aggiunge il riconoscimento del testo, così potrai cercare e copiare le parole nel documento. JPEG, PNG e TIFF creano invece un'immagine per ogni pagina.";
 "tut.extras.t" = "Opzioni utili";
-"tut.extras.b" = "«Salta le pagine vuote» elimina automaticamente i retro bianchi quando acquisisci in fronte-retro. «Raddrizza automaticamente» corregge i fogli entrati un po' storti.";
+"tut.extras.b" = "«Ruota automaticamente le pagine» riconosce un foglio inserito sottosopra e lo gira nel verso giusto. «Raddrizza automaticamente le pagine» corregge i fogli entrati un po' storti. «Salta le pagine vuote» elimina i retro bianchi quando acquisisci in fronte-retro.";
 "tut.save.t" = "Dove finiscono i file";
 "tut.save.b" = "In «Salva in» scegli la cartella (di solito Documenti). In «Nome» c'è già la data di oggi: puoi cambiarla come preferisci. Se esiste già un file con lo stesso nome, ne viene creato uno nuovo senza sovrascrivere quello vecchio.";
 "tut.defaults.t" = "Imposta i tuoi valori predefiniti";

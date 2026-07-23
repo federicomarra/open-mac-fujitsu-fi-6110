@@ -9,6 +9,7 @@ struct SettingsView: View {
     @AppStorage(DefaultsKey.resolution) private var resolution = 300
     @AppStorage(DefaultsKey.paperSize) private var paperSize = PaperSize.a4.rawValue
     @AppStorage(DefaultsKey.duplex) private var duplex = true
+    @AppStorage(DefaultsKey.autoRotate) private var autoRotate = false
     @AppStorage(DefaultsKey.deskew) private var deskew = true
     @AppStorage(DefaultsKey.skipBlank) private var skipBlank = true
     @AppStorage(DefaultsKey.format) private var format = OutputFormat.pdf.rawValue
@@ -46,6 +47,7 @@ struct SettingsView: View {
                         }.labelsHidden().frame(width: 170)
                     }
                     Toggle(L("panel.duplex"), isOn: $duplex)
+                    Toggle(L("panel.autorotate"), isOn: $autoRotate)
                     Toggle(L("panel.deskew"), isOn: $deskew)
                     Toggle(L("panel.skipblank"), isOn: $skipBlank)
                 }

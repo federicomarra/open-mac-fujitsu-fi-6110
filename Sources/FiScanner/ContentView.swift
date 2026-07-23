@@ -168,6 +168,7 @@ private struct OptionsPanel: View {
         }
 
         Toggle(L("panel.duplex"), isOn: $model.duplex)
+        Toggle(L("panel.autorotate"), isOn: $model.autoRotate)
         Toggle(L("panel.deskew"), isOn: $model.deskew)
         Toggle(L("panel.skipblank"), isOn: $model.skipBlankPages)
     }

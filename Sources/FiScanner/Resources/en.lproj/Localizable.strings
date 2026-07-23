@@ -18,6 +18,7 @@
 "paper.letter" = "Letter";
 "paper.legal" = "Legal";
 "panel.duplex" = "Scan both sides";
+"panel.autorotate" = "Rotate pages automatically";
 "panel.deskew" = "Straighten pages automatically";
 "panel.skipblank" = "Skip blank pages";
 "panel.format" = "Format";
@@ -84,7 +85,7 @@
 "tut.format.t" = "Choose the file format";
 "tut.format.b" = "“PDF” makes a single document with all pages. “PDF (searchable)” adds text recognition, so you can search and copy the words in the document. JPEG, PNG and TIFF instead make one image per page.";
 "tut.extras.t" = "Handy options";
-"tut.extras.b" = "“Skip blank pages” automatically drops empty backsides when scanning both sides. “Straighten automatically” corrects sheets that went in slightly skewed.";
+"tut.extras.b" = "“Rotate pages automatically” detects a sheet fed upside-down and turns it the right way up. “Straighten pages automatically” corrects sheets that went in slightly skewed. “Skip blank pages” drops empty backsides when scanning both sides.";
 "tut.save.t" = "Where the files go";
 "tut.save.b" = "Under “Save to” pick the folder (usually Documents). “Name” already contains today's date: change it however you like. If a file with the same name already exists, a new one is created without overwriting the old one.";
 "tut.defaults.t" = "Set your defaults";

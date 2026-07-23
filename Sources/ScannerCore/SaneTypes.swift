@@ -28,6 +28,8 @@ public struct ScanSettings: Sendable {
     public var resolution: Int = 300
     public var duplex: Bool = false
     public var paperSize: PaperSize = .a4
+    /// Auto-detect an upside-down page (content-based, 180° only) and correct it.
+    public var autoRotate: Bool = false
     public var deskew: Bool = false
     public var skipBlankPages: Bool = false
     public init() {}

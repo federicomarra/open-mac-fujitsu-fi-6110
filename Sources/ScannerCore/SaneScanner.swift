@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 import CSane
 
@@ -116,6 +117,13 @@ public final class SaneScanner: @unchecked Sendable {
         try configure(h, api: api, settings: settings)
 
         var pagesScanned = 0
+        // In duplex, the two sides of a sheet share one physical orientation, so
+        // the front is held until its back arrives and the pair is rotated as one.
+        var pendingFront: (image: CGImage, index: Int)? = nil
+        func emit(_ image: CGImage, index: Int) {
+            onPage(ScannedPage(image: image, dpi: settings.resolution, index: index))
+        }
+
         batch: while true {
             let startStatus = api.start(h)
             if startStatus == SANE_STATUS_NO_DOCS { break batch }
@@ -159,7 +167,29 @@ public final class SaneScanner: @unchecked Sendable {
                 throw ScanError.imageDecodeFailed
             }
             pagesScanned += 1
-            onPage(ScannedPage(image: image, dpi: settings.resolution, index: pagesScanned))
+            let index = pagesScanned
+
+            // Auto-rotation corrects an upside-down page from its content (Vision)
+            // before emitting, so both the thumbnail and the saved file are upright.
+            if settings.autoRotate && settings.duplex {
+                if let front = pendingFront {
+                    let (frontImage, backImage) = OrientationCorrector.uprightPair(front.image, image)
+                    emit(frontImage, index: front.index)
+                    emit(backImage, index: index)
+                    pendingFront = nil
+                } else {
+                    pendingFront = (image, index)   // hold the front for its back
+                }
+            } else if settings.autoRotate {
+                emit(OrientationCorrector.uprightImage(image), index: index)
+            } else {
+                emit(image, index: index)
+            }
+        }
+
+        // Flush an unpaired final side (odd page count in a duplex batch).
+        if let front = pendingFront {
+            emit(OrientationCorrector.uprightImage(front.image), index: front.index)
         }
 
         api.cancel(h)

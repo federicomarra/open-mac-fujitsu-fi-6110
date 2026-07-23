@@ -39,6 +39,7 @@ final class ScannerViewModel: ObservableObject {
     @Published var resolution: Int = 300
     @Published var paperSize: PaperSize = .a4
     @Published var duplex = false
+    @Published var autoRotate = false
     @Published var deskew = true
     @Published var skipBlankPages = false
     @Published var format: OutputFormat = .pdf
@@ -59,6 +60,7 @@ final class ScannerViewModel: ObservableObject {
         resolution = AppDefaults.resolution
         paperSize = AppDefaults.paperSize
         duplex = AppDefaults.duplex
+        autoRotate = AppDefaults.autoRotate
         deskew = AppDefaults.deskew
         skipBlankPages = AppDefaults.skipBlank
         format = AppDefaults.format
@@ -165,6 +167,7 @@ final class ScannerViewModel: ObservableObject {
         settings.resolution = resolution
         settings.paperSize = paperSize
         settings.duplex = duplex
+        settings.autoRotate = autoRotate
         settings.deskew = deskew
         settings.skipBlankPages = skipBlankPages
         let outputFormat = format
