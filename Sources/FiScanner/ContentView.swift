@@ -94,11 +94,31 @@ private struct PagesArea: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
+        .onTapGesture(count: 2) {
+            model.rotatePage(id: item.id, .flip)
+        }
         .onDrag {
             model.draggingPageID = item.id
             return NSItemProvider(object: "\(item.id)" as NSString)
         }
         .onDrop(of: [.text], delegate: PageDropDelegate(targetID: item.id, model: model))
+        .contextMenu {
+            Button {
+                model.rotatePage(id: item.id, .right)
+            } label: {
+                Label(L("rotate.right"), systemImage: "rotate.right")
+            }
+            Button {
+                model.rotatePage(id: item.id, .left)
+            } label: {
+                Label(L("rotate.left"), systemImage: "rotate.left")
+            }
+            Button {
+                model.rotatePage(id: item.id, .flip)
+            } label: {
+                Label(L("rotate.flip"), systemImage: "arrow.triangle.2.circlepath")
+            }
+        }
     }
 }
 

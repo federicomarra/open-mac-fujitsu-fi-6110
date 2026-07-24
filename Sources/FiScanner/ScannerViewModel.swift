@@ -290,6 +290,18 @@ final class ScannerViewModel: ObservableObject {
         resaveInPlace()
     }
 
+    /// Rotate a single page (from a double-click or the right-click menu):
+    /// turns the full-resolution image, refreshes its thumbnail, and re-saves.
+    func rotatePage(id: Int, _ rotation: PageRotation) {
+        guard activity == .idle, let index = pageItems.firstIndex(where: { $0.id == id }) else { return }
+        let old = pageItems[index]
+        let rotatedImage = ImageRotator.rotate(old.page.image, rotation)
+        let newPage = ScannedPage(image: rotatedImage, dpi: old.page.dpi, index: old.page.index)
+        let newItem = PageItem(id: old.id, page: newPage, thumbnail: Self.thumbnail(for: rotatedImage))
+        withAnimation { pageItems[index] = newItem }
+        resaveInPlace()
+    }
+
     /// Re-writes the current page order to the file(s) this batch already saved,
     /// overwriting them in place (never spawning "-2"/"-3" copies). Falls back to
     /// a normal save if the first save never produced any file.

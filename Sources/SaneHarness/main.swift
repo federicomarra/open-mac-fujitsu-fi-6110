@@ -190,6 +190,24 @@ do {
                                onPageProcessed: { print("  processed page \($0)") })
         print("rewrote \(target)")
 
+    case "rotate":
+        // rotate <in> <out> left|right|flip — exercise ImageRotator.
+        guard arguments.count >= 4 else { print("usage: rotate <in> <out> left|right|flip"); exit(2) }
+        guard let src = CGImageSourceCreateWithURL(URL(fileURLWithPath: arguments[1]) as CFURL, nil),
+              let img = CGImageSourceCreateImageAtIndex(src, 0, nil) else {
+            print("cannot read \(arguments[1])"); exit(1)
+        }
+        let rot: PageRotation
+        switch arguments[3] {
+        case "left": rot = .left
+        case "right": rot = .right
+        case "flip": rot = .flip
+        default: print("unknown rotation \(arguments[3])"); exit(2)
+        }
+        let rotated = ImageRotator.rotate(img, rot)
+        try savePNG(rotated, to: URL(fileURLWithPath: arguments[2]))
+        print("wrote \(arguments[2]) (\(rotated.width)x\(rotated.height))")
+
     case "upright":
         // upright <in.png> <out.png> — run OrientationCorrector on one image.
         guard arguments.count >= 3 else { print("usage: upright <in> <out>"); exit(2) }

@@ -41,6 +41,9 @@
 
 /* Pages */
 "pages.reorderHint" = "Trascina le pagine per riordinarle";
+"rotate.right" = "Ruota a destra";
+"rotate.left" = "Ruota a sinistra";
+"rotate.flip" = "Capovolgi (180°)";
 
 /* Progress */
 "progress.page %d" = "Scansione pagina %d…";
@@ -92,7 +95,7 @@
 "tut.extras.t" = "Opzioni utili";
 "tut.extras.b" = "«Ruota automaticamente le pagine» riconosce un foglio inserito sottosopra e lo gira nel verso giusto. «Raddrizza automaticamente le pagine» corregge i fogli entrati un po' storti. «Salta le pagine vuote» elimina i retro bianchi quando acquisisci in fronte-retro.";
 "tut.arrange.t" = "Riordina le pagine";
-"tut.arrange.b" = "Dopo la scansione puoi trascinare le pagine per cambiarne l'ordine, oppure premere «Inverti ordine» per capovolgerlo tutto. Il file salvato viene aggiornato automaticamente con il nuovo ordine.";
+"tut.arrange.b" = "Dopo la scansione puoi trascinare le pagine per cambiarne l'ordine, oppure premere «Inverti ordine» per capovolgerlo tutto. Un doppio clic su una pagina la ruota di 180°; con il tasto destro puoi ruotarla a destra, a sinistra o capovolgerla. Il file salvato viene aggiornato automaticamente.";
 "tut.save.t" = "Dove finiscono i file";
 "tut.save.b" = "In «Salva in» scegli la cartella (di solito Documenti). In «Nome» c'è già la data di oggi: puoi cambiarla come preferisci. Se esiste già un file con lo stesso nome, ne viene creato uno nuovo aggiungendo -1, -2… senza sovrascrivere quello vecchio. Attiva «Sovrascrivi il file se esiste già» se invece preferisci sostituirlo.";
 "tut.defaults.t" = "Imposta i tuoi valori predefiniti";
