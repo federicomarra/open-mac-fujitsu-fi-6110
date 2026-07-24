@@ -10,6 +10,7 @@ enum DefaultsKey {
     static let duplex = "defaultDuplex"
     static let deskew = "defaultDeskew"
     static let skipBlank = "defaultSkipBlank"
+    static let overwrite = "defaultOverwrite"
     static let format = "defaultFormat"
     static let saveFolderPath = "defaultSaveFolderPath"
 }
@@ -31,6 +32,9 @@ enum AppDefaults {
             DefaultsKey.duplex: true,
             DefaultsKey.deskew: true,
             DefaultsKey.skipBlank: true,
+            // Off by default: never silently replace an existing file — add a
+            // "-1"/"-2" suffix instead.
+            DefaultsKey.overwrite: false,
             DefaultsKey.format: OutputFormat.pdf.rawValue,
             DefaultsKey.saveFolderPath: "",
         ])
@@ -60,6 +64,7 @@ enum AppDefaults {
     static var duplex: Bool { store.bool(forKey: DefaultsKey.duplex) }
     static var deskew: Bool { store.bool(forKey: DefaultsKey.deskew) }
     static var skipBlank: Bool { store.bool(forKey: DefaultsKey.skipBlank) }
+    static var overwrite: Bool { store.bool(forKey: DefaultsKey.overwrite) }
     static var format: OutputFormat {
         OutputFormat(rawValue: store.string(forKey: DefaultsKey.format) ?? "") ?? .pdf
     }

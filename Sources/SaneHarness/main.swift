@@ -106,11 +106,12 @@ do {
         print(count == 0 ? "feeder empty — no pages scanned" : "done: \(count) page(s)")
 
     case "convert":
-        // convert <image...> --format pdf|searchablePDF|jpeg|png|tiff --out DIR [--dpi N]
+        // convert <image...> --format pdf|searchablePDF|jpeg|png|tiff --out DIR [--dpi N] [--overwrite]
         var files: [String] = []
         var format = OutputFormat.pdf
         var outDir = FileManager.default.currentDirectoryPath
         var dpi = 200
+        var overwrite = false
         var i = 1
         while i < arguments.count {
             switch arguments[i] {
@@ -126,6 +127,8 @@ do {
             case "--dpi":
                 i += 1
                 dpi = Int(arguments[i]) ?? 200
+            case "--overwrite":
+                overwrite = true
             default:
                 files.append(arguments[i])
             }
@@ -145,6 +148,7 @@ do {
             format: format,
             directory: URL(fileURLWithPath: outDir),
             baseName: "Converted",
+            overwrite: overwrite,
             onPageProcessed: { print("  processed page \($0)") }
         )
         for url in urls { print("wrote \(url.path)") }

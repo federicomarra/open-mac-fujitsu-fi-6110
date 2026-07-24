@@ -31,8 +31,10 @@ public enum OutputFormat: String, CaseIterable, Identifiable, Sendable {
 }
 
 public enum ScanWriter {
-    /// Writes the scanned pages to `directory` using `baseName`, never
-    /// overwriting existing files (appends " 2", " 3", … like Finder).
+    /// Writes the scanned pages to `directory` using `baseName`.
+    /// When `overwrite` is false (the default) an existing file is never
+    /// clobbered — a `-1`, `-2`, … suffix is appended to find a free name.
+    /// When `overwrite` is true the file at `baseName` is replaced.
     /// PDF formats produce one file; image formats produce one file per page.
     /// Returns the URLs written. `onPageProcessed` reports OCR/write progress.
     public static func write(
@@ -40,6 +42,7 @@ public enum ScanWriter {
         format: OutputFormat,
         directory: URL,
         baseName: String,
+        overwrite: Bool = false,
         onPageProcessed: ((Int) -> Void)? = nil
     ) throws -> [URL] {
         guard !pages.isEmpty else { return [] }
@@ -47,7 +50,7 @@ public enum ScanWriter {
 
         switch format {
         case .pdf, .searchablePDF:
-            let url = availableURL(directory: directory, base: cleanBase, ext: "pdf")
+            let url = availableURL(directory: directory, base: cleanBase, ext: "pdf", overwrite: overwrite)
             try PDFBuilder.write(
                 pages: pages,
                 to: url,
@@ -60,7 +63,7 @@ public enum ScanWriter {
             var written: [URL] = []
             for page in pages {
                 let base = pages.count == 1 ? cleanBase : "\(cleanBase) \(page.index)"
-                let url = availableURL(directory: directory, base: base, ext: format.fileExtension)
+                let url = availableURL(directory: directory, base: base, ext: format.fileExtension, overwrite: overwrite)
                 try writeImage(page, format: format, to: url)
                 written.append(url)
                 onPageProcessed?(page.index)
@@ -87,13 +90,17 @@ public enum ScanWriter {
         }
     }
 
-    /// First free URL for base name: "Name.ext", then "Name 2.ext", "Name 3.ext"…
-    private static func availableURL(directory: URL, base: String, ext: String) -> URL {
+    /// URL to write for `base`.`ext`. With `overwrite` the plain name is returned
+    /// (replacing any existing file); otherwise the first free name is found by
+    /// appending "-1", "-2", … : "Name.ext", then "Name-1.ext", "Name-2.ext"…
+    private static func availableURL(directory: URL, base: String, ext: String, overwrite: Bool) -> URL {
+        let plain = directory.appendingPathComponent("\(base).\(ext)")
+        guard !overwrite else { return plain }
         let fm = FileManager.default
-        var candidate = directory.appendingPathComponent("\(base).\(ext)")
-        var counter = 2
+        var candidate = plain
+        var counter = 1
         while fm.fileExists(atPath: candidate.path) {
-            candidate = directory.appendingPathComponent("\(base) \(counter).\(ext)")
+            candidate = directory.appendingPathComponent("\(base)-\(counter).\(ext)")
             counter += 1
         }
         return candidate

@@ -205,6 +205,8 @@ private struct OptionsPanel: View {
             TextField("", text: $model.fileName)
                 .textFieldStyle(.roundedBorder)
         }
+
+        Toggle(L("panel.overwrite"), isOn: $model.overwrite)
     }
 
     private func folderButton(name: String, path: FileManager.SearchPathDirectory) -> some View {

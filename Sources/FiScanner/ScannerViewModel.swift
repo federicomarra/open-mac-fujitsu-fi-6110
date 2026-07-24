@@ -42,6 +42,7 @@ final class ScannerViewModel: ObservableObject {
     @Published var autoRotate = false
     @Published var deskew = true
     @Published var skipBlankPages = false
+    @Published var overwrite = false
     @Published var format: OutputFormat = .pdf
     @Published var saveFolder: URL
     @Published var fileName: String
@@ -63,6 +64,7 @@ final class ScannerViewModel: ObservableObject {
         autoRotate = AppDefaults.autoRotate
         deskew = AppDefaults.deskew
         skipBlankPages = AppDefaults.skipBlank
+        overwrite = AppDefaults.overwrite
         format = AppDefaults.format
         saveFolder = AppDefaults.saveFolder
         fileName = Self.defaultFileName()
@@ -173,6 +175,7 @@ final class ScannerViewModel: ObservableObject {
         let outputFormat = format
         let directory = saveFolder
         let baseName = fileName
+        let shouldOverwrite = overwrite
         let finalSettings = settings
 
         workQueue.async { [weak self] in
@@ -213,6 +216,7 @@ final class ScannerViewModel: ObservableObject {
                     format: outputFormat,
                     directory: directory,
                     baseName: baseName,
+                    overwrite: shouldOverwrite,
                     onPageProcessed: { page in
                         Task { @MainActor in
                             self.activity = .saving(page: page, total: count, ocr: ocr)

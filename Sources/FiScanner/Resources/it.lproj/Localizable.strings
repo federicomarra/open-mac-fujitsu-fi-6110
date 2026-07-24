@@ -30,6 +30,7 @@
 "saveto.other" = "Altra cartella…";
 "panel.name" = "Nome";
 "name.default" = "Scansione";
+"panel.overwrite" = "Sovrascrivi il file se esiste già";
 
 /* Buttons */
 "button.scan" = "Scansiona";
@@ -87,7 +88,7 @@
 "tut.extras.t" = "Opzioni utili";
 "tut.extras.b" = "«Ruota automaticamente le pagine» riconosce un foglio inserito sottosopra e lo gira nel verso giusto. «Raddrizza automaticamente le pagine» corregge i fogli entrati un po' storti. «Salta le pagine vuote» elimina i retro bianchi quando acquisisci in fronte-retro.";
 "tut.save.t" = "Dove finiscono i file";
-"tut.save.b" = "In «Salva in» scegli la cartella (di solito Documenti). In «Nome» c'è già la data di oggi: puoi cambiarla come preferisci. Se esiste già un file con lo stesso nome, ne viene creato uno nuovo senza sovrascrivere quello vecchio.";
+"tut.save.b" = "In «Salva in» scegli la cartella (di solito Documenti). In «Nome» c'è già la data di oggi: puoi cambiarla come preferisci. Se esiste già un file con lo stesso nome, ne viene creato uno nuovo aggiungendo -1, -2… senza sovrascrivere quello vecchio. Attiva «Sovrascrivi il file se esiste già» se invece preferisci sostituirlo.";
 "tut.defaults.t" = "Imposta i tuoi valori predefiniti";
 "tut.defaults.b" = "Dal menu «fi-6110 Scanner ▸ Impostazioni…» (⌘,) puoi decidere le opzioni che vuoi trovare già pronte ogni volta che apri l'app: tipo, risoluzione, fronte-retro, formato e altro.";
 "tut.trouble.t" = "Se qualcosa non va";

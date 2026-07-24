@@ -12,6 +12,7 @@ struct SettingsView: View {
     @AppStorage(DefaultsKey.autoRotate) private var autoRotate = false
     @AppStorage(DefaultsKey.deskew) private var deskew = true
     @AppStorage(DefaultsKey.skipBlank) private var skipBlank = true
+    @AppStorage(DefaultsKey.overwrite) private var overwrite = false
     @AppStorage(DefaultsKey.format) private var format = OutputFormat.pdf.rawValue
     @AppStorage(DefaultsKey.saveFolderPath) private var saveFolderPath = ""
 
@@ -74,6 +75,7 @@ struct SettingsView: View {
                             Button(L("settings.choose")) { chooseFolder() }
                         }
                     }
+                    Toggle(L("panel.overwrite"), isOn: $overwrite)
                 }
             }
             .padding(22)

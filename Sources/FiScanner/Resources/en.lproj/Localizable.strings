@@ -30,6 +30,7 @@
 "saveto.other" = "Other…";
 "panel.name" = "Name";
 "name.default" = "Scan";
+"panel.overwrite" = "Overwrite the file if it already exists";
 
 /* Buttons */
 "button.scan" = "Scan";
@@ -87,7 +88,7 @@
 "tut.extras.t" = "Handy options";
 "tut.extras.b" = "“Rotate pages automatically” detects a sheet fed upside-down and turns it the right way up. “Straighten pages automatically” corrects sheets that went in slightly skewed. “Skip blank pages” drops empty backsides when scanning both sides.";
 "tut.save.t" = "Where the files go";
-"tut.save.b" = "Under “Save to” pick the folder (usually Documents). “Name” already contains today's date: change it however you like. If a file with the same name already exists, a new one is created without overwriting the old one.";
+"tut.save.b" = "Under “Save to” pick the folder (usually Documents). “Name” already contains today's date: change it however you like. If a file with the same name already exists, a new one is created with -1, -2… added, without overwriting the old one. Turn on “Overwrite the file if it already exists” if you'd rather replace it.";
 "tut.defaults.t" = "Set your defaults";
 "tut.defaults.b" = "From “fi-6110 Scanner ▸ Settings…” (⌘,) you can choose the options you want ready every time you open the app: kind, resolution, both sides, format and more.";
 "tut.trouble.t" = "If something goes wrong";
