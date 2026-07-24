@@ -98,7 +98,7 @@ jobs:
             echo "---"
             echo "## Installazione e Primo Avvio / Installation & First Launch"
             echo ""
-            echo "🇮🇹 Italiano:**"
+            echo "**🇮🇹 Italiano:**"
             echo "1. Trascina **fi-6110 Scanner.app** nella cartella **Applicazioni**."
             echo "2. L'app è firmata ad-hoc: al **primo avvio**, fai **clic destro** (o `Ctrl` + clic) sull'icona dell'app e seleziona **Apri**, quindi conferma cliccando su **Apri** nella finestra di macOS."
             echo ""
