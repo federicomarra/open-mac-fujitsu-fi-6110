@@ -290,6 +290,19 @@ final class ScannerViewModel: ObservableObject {
         resaveInPlace()
     }
 
+    /// Flip every page 180° at once (turns each image, refreshes thumbnails), then re-save.
+    func flipAllPages() {
+        guard activity == .idle, !pageItems.isEmpty else { return }
+        withAnimation {
+            pageItems = pageItems.map { item in
+                let rotated = ImageRotator.rotate(item.page.image, .flip)
+                let page = ScannedPage(image: rotated, dpi: item.page.dpi, index: item.page.index)
+                return PageItem(id: item.id, page: page, thumbnail: Self.thumbnail(for: rotated))
+            }
+        }
+        resaveInPlace()
+    }
+
     /// Rotate a single page (from a double-click or the right-click menu):
     /// turns the full-resolution image, refreshes its thumbnail, and re-saves.
     func rotatePage(id: Int, _ rotation: PageRotation) {

@@ -60,18 +60,29 @@ private struct PagesArea: View {
     @ViewBuilder
     private var reorderToolbar: some View {
         if model.pageItems.count > 1 {
-            HStack(spacing: 8) {
-                Image(systemName: "hand.draw")
-                    .foregroundColor(.secondary)
-                Text(L("pages.reorderHint"))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Spacer()
-                Button {
-                    model.reversePages()
-                } label: {
-                    Label(L("button.reverse"), systemImage: "arrow.up.arrow.down")
+            VStack(spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: "hand.draw")
+                        .foregroundColor(.secondary)
+                    Text(L("pages.reorderHint"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
                 }
+                HStack(spacing: 8) {
+                    Spacer()
+                    Button {
+                        model.flipAllPages()
+                    } label: {
+                        Label(L("button.flipAll"), systemImage: "arrow.triangle.2.circlepath")
+                    }
+                    Button {
+                        model.reversePages()
+                    } label: {
+                        Label(L("button.reverse"), systemImage: "arrow.up.arrow.down")
+                    }
+                }
+                .controlSize(.small)
                 .disabled(!model.canReorder)
             }
             .padding(.horizontal, 20)

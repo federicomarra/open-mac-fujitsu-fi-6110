@@ -38,6 +38,7 @@
 "button.clear" = "Clear";
 "button.showInFinder" = "Show in Finder";
 "button.reverse" = "Reverse order";
+"button.flipAll" = "Flip all";
 
 /* Pages */
 "pages.reorderHint" = "Drag the pages to reorder";
@@ -95,7 +96,7 @@
 "tut.extras.t" = "Handy options";
 "tut.extras.b" = "“Rotate pages automatically” detects a sheet fed upside-down and turns it the right way up. “Straighten pages automatically” corrects sheets that went in slightly skewed. “Skip blank pages” drops empty backsides when scanning both sides.";
 "tut.arrange.t" = "Rearrange the pages";
-"tut.arrange.b" = "After scanning you can drag the pages to change their order, or press “Reverse order” to flip them all. Double-click a page to rotate it 180°; right-click it to rotate right, left, or flip. The saved file is updated automatically.";
+"tut.arrange.b" = "After scanning you can drag the pages to change their order, or press “Reverse order” to reverse it. “Flip all” rotates every page 180° at once. Double-click a page to rotate it 180°; right-click it to rotate right, left, or flip. The saved file is updated automatically.";
 "tut.save.t" = "Where the files go";
 "tut.save.b" = "Under “Save to” pick the folder (usually Documents). “Name” already contains today's date: change it however you like. If a file with the same name already exists, a new one is created with -1, -2… added, without overwriting the old one. Turn on “Overwrite the file if it already exists” if you'd rather replace it.";
 "tut.defaults.t" = "Set your defaults";
