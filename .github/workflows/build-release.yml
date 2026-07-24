@@ -18,11 +18,11 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-14 # Apple Silicon; cross-compiles the x86_64 slice too
+    runs-on: macos-26 # Apple Silicon; cross-compiles the x86_64 slice too
 
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # full history + tags, so release notes can list commits
 
@@ -44,7 +44,7 @@ jobs:
         run: brew install pkgconf # the SANE vendor build uses it to find libusb
 
       - name: Cache vendor libraries
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             vendor/out
@@ -96,9 +96,9 @@ jobs:
             echo ""
             echo ""
             echo "---"
-            echo "### 📦 Installazione e Primo Avvio / Installation & First Launch"
+            echo "## Installazione e Primo Avvio / Installation & First Launch"
             echo ""
-            echo "**🇮🇹 Italiano:**"
+            echo "🇮🇹 Italiano:**"
             echo "1. Trascina **fi-6110 Scanner.app** nella cartella **Applicazioni**."
             echo "2. L'app è firmata ad-hoc: al **primo avvio**, fai **clic destro** (o `Ctrl` + clic) sull'icona dell'app e seleziona **Apri**, quindi conferma cliccando su **Apri** nella finestra di macOS."
             echo ""
