@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import ScannerCore
 import UniformTypeIdentifiers
@@ -281,8 +282,8 @@ private struct OptionsPanel: View {
 
         VStack(alignment: .leading, spacing: 4) {
             Text(L("panel.name")).font(.caption).foregroundColor(.secondary)
-            TextField("", text: $model.fileName)
-                .textFieldStyle(.roundedBorder)
+            ScrollingNameField(text: $model.fileName)
+                .frame(height: 22)
         }
 
         Toggle(L("panel.overwrite"), isOn: $model.overwrite)
@@ -353,6 +354,44 @@ private struct LabeledPicker<SelectionValue: Hashable, Content: View>: View {
             Picker("", selection: selection, content: content)
                 .labelsHidden()
                 .pickerStyle(.menu)
+        }
+    }
+}
+
+/// Single-line name field backed by `NSTextField`. Unlike a SwiftUI `TextField`
+/// inside a `ScrollView`, its field editor keeps scrolling to the caret, so a
+/// long filename stays visible at the point you're typing.
+private struct ScrollingNameField: NSViewRepresentable {
+    @Binding var text: String
+
+    func makeNSView(context: Context) -> NSTextField {
+        let field = NSTextField(string: text)
+        field.isBezeled = true                 // standard bezel, matches .roundedBorder
+        field.bezelStyle = .squareBezel
+        field.usesSingleLineMode = true
+        field.lineBreakMode = .byClipping
+        field.cell?.isScrollable = true        // scroll to keep the caret visible
+        field.cell?.wraps = false
+        field.font = .systemFont(ofSize: NSFont.systemFontSize)
+        field.delegate = context.coordinator
+        field.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return field
+    }
+
+    func updateNSView(_ nsView: NSTextField, context: Context) {
+        // Only touch the value when it actually differs, so typing never resets
+        // the field editor's scroll position or selection.
+        if nsView.stringValue != text { nsView.stringValue = text }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(text: $text) }
+
+    final class Coordinator: NSObject, NSTextFieldDelegate {
+        private let text: Binding<String>
+        init(text: Binding<String>) { self.text = text }
+        func controlTextDidChange(_ notification: Notification) {
+            guard let field = notification.object as? NSTextField else { return }
+            text.wrappedValue = field.stringValue   // continuous, per keystroke
         }
     }
 }
