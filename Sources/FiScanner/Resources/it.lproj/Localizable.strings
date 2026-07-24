@@ -37,6 +37,10 @@
 "button.cancel" = "Annulla";
 "button.clear" = "Svuota";
 "button.showInFinder" = "Mostra nel Finder";
+"button.reverse" = "Inverti ordine";
+
+/* Pages */
+"pages.reorderHint" = "Trascina le pagine per riordinarle";
 
 /* Progress */
 "progress.page %d" = "Scansione pagina %d…";
@@ -87,6 +91,8 @@
 "tut.format.b" = "«PDF» crea un unico documento con tutte le pagine. «PDF (ricercabile)» aggiunge il riconoscimento del testo, così potrai cercare e copiare le parole nel documento. JPEG, PNG e TIFF creano invece un'immagine per ogni pagina.";
 "tut.extras.t" = "Opzioni utili";
 "tut.extras.b" = "«Ruota automaticamente le pagine» riconosce un foglio inserito sottosopra e lo gira nel verso giusto. «Raddrizza automaticamente le pagine» corregge i fogli entrati un po' storti. «Salta le pagine vuote» elimina i retro bianchi quando acquisisci in fronte-retro.";
+"tut.arrange.t" = "Riordina le pagine";
+"tut.arrange.b" = "Dopo la scansione puoi trascinare le pagine per cambiarne l'ordine, oppure premere «Inverti ordine» per capovolgerlo tutto. Il file salvato viene aggiornato automaticamente con il nuovo ordine.";
 "tut.save.t" = "Dove finiscono i file";
 "tut.save.b" = "In «Salva in» scegli la cartella (di solito Documenti). In «Nome» c'è già la data di oggi: puoi cambiarla come preferisci. Se esiste già un file con lo stesso nome, ne viene creato uno nuovo aggiungendo -1, -2… senza sovrascrivere quello vecchio. Attiva «Sovrascrivi il file se esiste già» se invece preferisci sostituirlo.";
 "tut.defaults.t" = "Imposta i tuoi valori predefiniti";

@@ -1,5 +1,6 @@
 import SwiftUI
 import ScannerCore
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @StateObject private var model = ScannerViewModel()
@@ -40,28 +41,86 @@ private struct PagesArea: View {
             if model.pageItems.isEmpty {
                 EmptyState(model: model)
             } else {
-                ScrollView {
-                    LazyVGrid(columns: columns, spacing: 16) {
-                        ForEach(model.pageItems) { item in
-                            VStack(spacing: 6) {
-                                Image(nsImage: item.thumbnail)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .background(Color.white)
-                                    .overlay(
-                                        Rectangle().stroke(Color.black.opacity(0.15), lineWidth: 1)
-                                    )
-                                    .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
-                                Text(String(format: L("page.caption %d"), item.id))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                VStack(spacing: 0) {
+                    reorderToolbar
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 16) {
+                            ForEach(Array(model.pageItems.enumerated()), id: \.element.id) { index, item in
+                                pageCell(item: item, position: index + 1)
                             }
                         }
+                        .padding(20)
                     }
-                    .padding(20)
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var reorderToolbar: some View {
+        if model.pageItems.count > 1 {
+            HStack(spacing: 8) {
+                Image(systemName: "hand.draw")
+                    .foregroundColor(.secondary)
+                Text(L("pages.reorderHint"))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Button {
+                    model.reversePages()
+                } label: {
+                    Label(L("button.reverse"), systemImage: "arrow.up.arrow.down")
+                }
+                .disabled(!model.canReorder)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            Divider()
+        }
+    }
+
+    private func pageCell(item: PageItem, position: Int) -> some View {
+        VStack(spacing: 6) {
+            Image(nsImage: item.thumbnail)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .background(Color.white)
+                .overlay(
+                    Rectangle().stroke(Color.black.opacity(0.15), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
+                .opacity(model.draggingPageID == item.id ? 0.4 : 1)
+            Text(String(format: L("page.caption %d"), position))
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .onDrag {
+            model.draggingPageID = item.id
+            return NSItemProvider(object: "\(item.id)" as NSString)
+        }
+        .onDrop(of: [.text], delegate: PageDropDelegate(targetID: item.id, model: model))
+    }
+}
+
+/// Live drag-to-reorder for the page grid. Reorders as the drag hovers each
+/// thumbnail and triggers the in-place re-save when the drag is dropped. The
+/// model calls hop to the main actor, so they work across SDKs (the DropDelegate
+/// methods themselves are not main-actor isolated).
+private struct PageDropDelegate: DropDelegate {
+    let targetID: Int
+    let model: ScannerViewModel
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .move)
+    }
+
+    func dropEntered(info: DropInfo) {
+        Task { @MainActor in model.moveDragged(beforeID: targetID) }
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        Task { @MainActor in model.endReorder() }
+        return true
     }
 }
 

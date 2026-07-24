@@ -61,6 +61,87 @@ Notable choices:
 - The app is intentionally **not sandboxed**: user-space USB access via libusb
   requires it.
 
+## App Architecture
+
+```
+╔═══════════════════════════════════════════════════════════════════════════════════╗
+║   fi-6110 Scanner.app (universal binary, macOS 12.0+)                           ║
+║   ┌─────────────────────────────────────────────────────────────────────────────┐ ║
+║   │ Contents/                                                                   │ ║
+║   │   ┌─────────────────────────────────────────────────────────────────────┐ │ ║
+║   │   │ MacOS/                                                              │ │ ║
+║   │   │   ┌─────────────────────────────────────────────────────────────┐   │ │ ║
+║   │   │   │ FiScanner           (SwiftGUI → ScannerCore → CSane)        │   │ │ ║
+║   │   │   └─────────────────────────────────────────────────────────────┘   │ │ ║
+║   │   │                                                                     │ │ ║
+║   │   │ Frameworks/                                                         │ │ ║
+║   │   │   │ libsane-fujitsu.so        (SANE backend, bundled, rpath → lib/) │ │ ║
+║   │   │   │ libusb-1.0.0.dylib        ( bundled, rpath → lib/)             │ │ ║
+║   │   │   └─────────────────────────────────────────────────────────────┘   │ │ ║
+║   │   │                                                                     │ │ ║
+║   │   │ Resources/                                                          │ │ ║
+║   │   │   │ en.lproj/Localizable.strings                                      │ │ ║
+║   │   │   │ it.lproj/Localizable.strings                                      │ │ ║
+║   │   │   │ AppIcon.icns                                                        │ │ ║
+║   │   │   │ sane.d/                                                             │ │ ║
+║   │   │   │   │ fujitsu                     (SANE backend config)             │ │ ║
+║   │   │   │   │   └─ daemon → libsane-fujitsu.so (dlopen via CSane)          │ │ ║
+║   │   │   └─────────────────────────────────────────────────────────────┘   │ │ ║
+║   │   └─────────────────────────────────────────────────────────────────────┘ │ ║
+║   └─────────────────────────────────────────────────────────────────────────────┘ ║
+╚═══════════════════════════════════════════════════════════════════════════════════╝
+
+- `FiScanner` (SwiftUI) → loads `CSane` (C shim) → `dlopen("lib/libsane-fujitsu.so")` → SANE backend -> libusb-1.0.0.dylib
+- SANE backend uses `SANE_CONFIG_DIR` → `Resources/sane.d` → daemon loads `.so` from `Frameworks/`
+- App *not* sandboxed: USB access via libusb requires it
+```
+
+## Code Architecture
+
+```
+┌────────────────────────── fi-6110 Scanner.app ──────────────────────────┐
+│ SwiftUI app (universal, macOS 12+)                                      │
+│  ├─ SaneEngine  — Swift wrapper over bundled libsane (C interop)        │
+│  │    device discovery · options (mode/dpi/duplex/deskew/blank-skip)    │
+│  │    ADF page loop → CGImage per page, progressive UI updates          │
+│  ├─ UI          — Image-Capture-style window: thumbnails left,          │
+│  │    options panel right, big "Scansiona" button                       │
+│  ├─ Processing  — PDFKit multi-page PDF · Vision OCR → searchable PDF   │
+│  │    (invisible text layer) · JPEG/PNG/TIFF via NSBitmapImageRep       │
+│  └─ Frameworks/ — bundled universal dylibs: libsane (fujitsu backend    │
+│       compiled in) + libusb-1.0, rpath-fixed, ad-hoc signed             │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+```
+┌─────────────────────────── Vendor / Build (ARM64 + x86_64) ──────────────┐
+│ vendor/build-sane.sh                                                     │
+│  ├── vendor/src/libusb       — pinned commit, cmake → universal lib     │
+│  ├── vendor/src/sane-backends — pinned, CMakeLists.txt patches for       │
+│  │    macOS universal build (fujitsu backend compiled as MH_BUNDLE)     │
+│  └── Compiled artifacts in vendor/out (universal lib + libsane-fujitsu │
+│      symlink, rpath-fixed for macOS Frameworks layout)                   │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+```
+┌─────────────────────────── Build Orchestration ─────────────────────────┐
+│ .github/workflows/build-release.yml (CI/CD)                              │
+│  ├── Checkout + version bump → bump + 0.1 on latest git tag             │
+│  ├── Cache vendor/out · vendor/src (for libsane + libusb)                │
+│  ├── Build vendor libs (if not cached) via vendor/build-sane.sh          │
+│  ├── Stamp version into Info.plist (CFBundleShortVersionString /        │
+│  │    CFBundleVersion = github-run-number)                              │
+│  ├── Make app + DMG via packaging/{make-icon.sh,make-app.sh,make-dmg.sh} │
+│  ├── Upload artifact (ZIP of DMG)                                      │
+│  └── Tag v$VERSION + GitHub Release + release notes from commit range     │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+```
+
+
+
 ## Developer CLI
 
 ```sh

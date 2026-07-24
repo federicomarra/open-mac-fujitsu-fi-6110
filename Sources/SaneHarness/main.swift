@@ -153,6 +153,43 @@ do {
         )
         for url in urls { print("wrote \(url.path)") }
 
+    case "resave":
+        // resave <outFile> <img...> [--format pdf|searchablePDF|jpeg|png|tiff]
+        // Rewrites images into an EXISTING file path in place (no suffix logic) —
+        // exercises ScanWriter.rewrite the way a page reorder re-save does.
+        var outFile: String? = nil
+        var imgs: [String] = []
+        var fmt = OutputFormat.pdf
+        var j = 1
+        while j < arguments.count {
+            switch arguments[j] {
+            case "--format":
+                j += 1
+                guard let f = OutputFormat(rawValue: arguments[j]) else {
+                    print("unknown format \(arguments[j])"); exit(2)
+                }
+                fmt = f
+            default:
+                if outFile == nil { outFile = arguments[j] } else { imgs.append(arguments[j]) }
+            }
+            j += 1
+        }
+        guard let target = outFile, !imgs.isEmpty else {
+            print("usage: resave <outFile> <img...> [--format pdf|png|…]"); exit(2)
+        }
+        var pgs: [ScannedPage] = []
+        for (n, file) in imgs.enumerated() {
+            let url = URL(fileURLWithPath: file)
+            guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+                  let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+                print("cannot read \(file)"); exit(1)
+            }
+            pgs.append(ScannedPage(image: image, dpi: 200, index: n + 1))
+        }
+        try ScanWriter.rewrite(pages: pgs, format: fmt, to: [URL(fileURLWithPath: target)],
+                               onPageProcessed: { print("  processed page \($0)") })
+        print("rewrote \(target)")
+
     case "upright":
         // upright <in.png> <out.png> — run OrientationCorrector on one image.
         guard arguments.count >= 3 else { print("usage: upright <in> <out>"); exit(2) }

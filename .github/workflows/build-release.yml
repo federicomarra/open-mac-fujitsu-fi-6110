@@ -10,21 +10,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write            # push the version tag and create the Release
+  contents: write # push the version tag and create the Release
 
 concurrency:
-  group: release-main        # serialize runs so two releases can't race
+  group: release-main # serialize runs so two releases can't race
   cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: macos-14        # Apple Silicon; cross-compiles the x86_64 slice too
+    runs-on: macos-14 # Apple Silicon; cross-compiles the x86_64 slice too
 
     steps:
       - name: Check out
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0   # full history + tags, so release notes can list commits
+          fetch-depth: 0 # full history + tags, so release notes can list commits
 
       - name: Compute next version
         run: |
@@ -41,7 +41,7 @@ jobs:
           echo "Building version $new (from tag '${latest:-none}')"
 
       - name: Install pkg-config
-        run: brew install pkgconf   # the SANE vendor build uses it to find libusb
+        run: brew install pkgconf # the SANE vendor build uses it to find libusb
 
       - name: Cache vendor libraries
         uses: actions/cache@v5

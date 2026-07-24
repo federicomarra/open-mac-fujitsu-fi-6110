@@ -72,6 +72,36 @@ public enum ScanWriter {
         }
     }
 
+    /// Re-writes `pages` to already-known URLs (from a previous `write`),
+    /// overwriting them in place — no collision/suffix logic. Used when the user
+    /// reorders the pages after scanning: the batch's own file(s) are updated,
+    /// never spawning new suffixed copies nor touching unrelated files.
+    /// PDF formats use `urls.first`; image formats map page *i* → `urls[i]`.
+    public static func rewrite(
+        pages: [ScannedPage],
+        format: OutputFormat,
+        to urls: [URL],
+        onPageProcessed: ((Int) -> Void)? = nil
+    ) throws {
+        guard !pages.isEmpty, !urls.isEmpty else { return }
+
+        switch format {
+        case .pdf, .searchablePDF:
+            try PDFBuilder.write(
+                pages: pages,
+                to: urls[0],
+                ocr: format == .searchablePDF,
+                onPageProcessed: onPageProcessed
+            )
+
+        case .jpeg, .png, .tiff:
+            for (offset, page) in pages.enumerated() where offset < urls.count {
+                try writeImage(page, format: format, to: urls[offset])
+                onPageProcessed?(offset + 1)
+            }
+        }
+    }
+
     private static func writeImage(_ page: ScannedPage, format: OutputFormat, to url: URL) throws {
         guard let uti = format.imageUTI,
               let destination = CGImageDestinationCreateWithURL(url as CFURL, uti, 1, nil) else {

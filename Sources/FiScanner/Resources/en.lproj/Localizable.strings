@@ -37,6 +37,10 @@
 "button.cancel" = "Cancel";
 "button.clear" = "Clear";
 "button.showInFinder" = "Show in Finder";
+"button.reverse" = "Reverse order";
+
+/* Pages */
+"pages.reorderHint" = "Drag the pages to reorder";
 
 /* Progress */
 "progress.page %d" = "Scanning page %d…";
@@ -87,6 +91,8 @@
 "tut.format.b" = "“PDF” makes a single document with all pages. “PDF (searchable)” adds text recognition, so you can search and copy the words in the document. JPEG, PNG and TIFF instead make one image per page.";
 "tut.extras.t" = "Handy options";
 "tut.extras.b" = "“Rotate pages automatically” detects a sheet fed upside-down and turns it the right way up. “Straighten pages automatically” corrects sheets that went in slightly skewed. “Skip blank pages” drops empty backsides when scanning both sides.";
+"tut.arrange.t" = "Rearrange the pages";
+"tut.arrange.b" = "After scanning you can drag the pages to change their order, or press “Reverse order” to flip them all. The saved file is updated automatically with the new order.";
 "tut.save.t" = "Where the files go";
 "tut.save.b" = "Under “Save to” pick the folder (usually Documents). “Name” already contains today's date: change it however you like. If a file with the same name already exists, a new one is created with -1, -2… added, without overwriting the old one. Turn on “Overwrite the file if it already exists” if you'd rather replace it.";
 "tut.defaults.t" = "Set your defaults";

@@ -33,6 +33,8 @@ final class ScannerViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published private(set) var savedMessage: String?
     @Published private(set) var savedURLs: [URL] = []
+    /// Id of the page currently being dragged for reordering (nil when idle).
+    @Published var draggingPageID: Int?
 
     // Scan settings (mirrors the options panel)
     @Published var mode: ScanColorMode = .color
@@ -53,6 +55,8 @@ final class ScannerViewModel: ObservableObject {
     private let workQueue = DispatchQueue(label: "it.fi6110.scanner.work", qos: .userInitiated)
     private var pollTimer: Timer?
     private var probeInFlight = false
+    /// Set while a drag actually moves pages, so the re-save fires only on real changes.
+    private var reorderDidChange = false
 
     init() {
         scanner = Self.makeScanner()
@@ -156,6 +160,9 @@ final class ScannerViewModel: ObservableObject {
         return false
     }
 
+    /// Pages can be dragged/reversed only when idle and there's more than one.
+    var canReorder: Bool { activity == .idle && pageItems.count > 1 }
+
     func startScan() {
         guard canScan else { return }
         pageItems = []
@@ -250,6 +257,98 @@ final class ScannerViewModel: ObservableObject {
         pageItems = []
         savedMessage = nil
         savedURLs = []
+        draggingPageID = nil
+        reorderDidChange = false
+    }
+
+    // MARK: - Reordering
+
+    /// Live reorder while dragging: move the dragged page to just before `targetID`.
+    func moveDragged(beforeID targetID: Int) {
+        guard activity == .idle,
+              let draggingPageID, draggingPageID != targetID,
+              let from = pageItems.firstIndex(where: { $0.id == draggingPageID }),
+              let to = pageItems.firstIndex(where: { $0.id == targetID }) else { return }
+        withAnimation {
+            pageItems.move(fromOffsets: IndexSet(integer: from), toOffset: to > from ? to + 1 : to)
+        }
+        reorderDidChange = true
+    }
+
+    /// End of a drag gesture: clear drag state and re-save if the order changed.
+    func endReorder() {
+        draggingPageID = nil
+        guard reorderDidChange else { return }
+        reorderDidChange = false
+        resaveInPlace()
+    }
+
+    /// Reverse the whole page order and re-save.
+    func reversePages() {
+        guard activity == .idle, pageItems.count > 1 else { return }
+        withAnimation { pageItems.reverse() }
+        resaveInPlace()
+    }
+
+    /// Re-writes the current page order to the file(s) this batch already saved,
+    /// overwriting them in place (never spawning "-2"/"-3" copies). Falls back to
+    /// a normal save if the first save never produced any file.
+    private func resaveInPlace() {
+        guard activity == .idle, !pageItems.isEmpty else { return }
+        let pages = pageItems.map { $0.page }
+        let existingURLs = savedURLs
+        let outputFormat = format
+        let directory = saveFolder
+        let baseName = fileName
+        let shouldOverwrite = overwrite
+        let ocr = outputFormat == .searchablePDF
+        let total = pages.count
+
+        savedMessage = nil
+        activity = .saving(page: 0, total: total, ocr: ocr)
+
+        workQueue.async { [weak self] in
+            guard let self = self else { return }
+            let progress: (Int) -> Void = { page in
+                Task { @MainActor in self.activity = .saving(page: page, total: total, ocr: ocr) }
+            }
+            do {
+                let finalURLs: [URL]
+                if existingURLs.isEmpty {
+                    finalURLs = try ScanWriter.write(
+                        pages: pages,
+                        format: outputFormat,
+                        directory: directory,
+                        baseName: baseName,
+                        overwrite: shouldOverwrite,
+                        onPageProcessed: progress
+                    )
+                } else {
+                    try ScanWriter.rewrite(
+                        pages: pages,
+                        format: outputFormat,
+                        to: existingURLs,
+                        onPageProcessed: progress
+                    )
+                    finalURLs = existingURLs
+                }
+                Task { @MainActor in
+                    self.activity = .idle
+                    self.savedURLs = finalURLs
+                    if let first = finalURLs.first {
+                        let name = finalURLs.count == 1
+                            ? first.lastPathComponent
+                            : String(format: L("msg.savedMultiple %d"), finalURLs.count)
+                        self.savedMessage = String(format: L("msg.saved %@"), name)
+                    }
+                }
+            } catch {
+                Task { @MainActor in
+                    self.activity = .idle
+                    self.errorMessage = Self.friendlyMessage(for: error)
+                }
+            }
+        }
     }
 
     func showSavedInFinder() {
