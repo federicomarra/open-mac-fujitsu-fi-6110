@@ -1,6 +1,7 @@
 #!/bin/bash
 # Builds dist/fi-6110 Scanner.dmg: the app, an Applications shortcut for
-# drag-installing, and Italian first-launch instructions (Leggimi.rtf).
+# drag-installing, and first-launch instructions in Italian (Leggimi.rtf)
+# and English (Readme.rtf).
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -23,6 +24,7 @@ echo ">>> staging DMG contents"
 cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applicazioni"
 textutil -convert rtf -output "$STAGE/Leggimi.rtf" "$DIR/Leggimi.html"
+textutil -convert rtf -output "$STAGE/Readme.rtf" "$DIR/Readme.html"
 
 echo ">>> creating DMG"
 rm -f "$DMG"
