@@ -96,8 +96,15 @@ jobs:
             echo ""
             echo ""
             echo "---"
-            echo "Trascina l'app in **Applicazioni**. Al primo avvio: clic destro sull'app → **Apri**."
-            echo "_(Drag the app to Applications; on first launch right-click the app → Open.)_"
+            echo "### 📦 Installazione e Primo Avvio / Installation & First Launch"
+            echo ""
+            echo "**🇮🇹 Italiano:**"
+            echo "1. Trascina **fi-6110 Scanner.app** nella cartella **Applicazioni**."
+            echo "2. L'app è firmata ad-hoc: al **primo avvio**, fai **clic destro** (o `Ctrl` + clic) sull'icona dell'app e seleziona **Apri**, quindi conferma cliccando su **Apri** nella finestra di macOS."
+            echo ""
+            echo "**🇬🇧 English:**"
+            echo "1. Drag **fi-6110 Scanner.app** into your **Applications** folder."
+            echo "2. As the app is ad-hoc signed, on **first launch** **right-click** (or `Ctrl` + click) the app icon and select **Open**, then confirm by clicking **Open** in the macOS dialog."
           } > release-notes.md
 
           gh release create "v$VERSION" "dist/fi-6110 Scanner.dmg" \
