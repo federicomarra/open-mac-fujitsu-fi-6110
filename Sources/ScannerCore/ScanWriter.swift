@@ -102,6 +102,41 @@ public enum ScanWriter {
         }
     }
 
+    /// Writes a document that mixes pages from a PDF the user picked with
+    /// freshly scanned ones ("add to a PDF"). Always a single PDF — importing is
+    /// offered only while the format is PDF. Naming follows the same rules as
+    /// `write`: `overwrite` replaces the file, otherwise "-1", "-2", … is added.
+    /// Returns the URL written.
+    public static func writeMerged(
+        pages: [MergePage],
+        searchable: Bool,
+        directory: URL,
+        baseName: String,
+        overwrite: Bool = false,
+        onPageProcessed: ((Int) -> Void)? = nil
+    ) throws -> URL {
+        let url = availableURL(
+            directory: directory,
+            base: sanitized(baseName),
+            ext: "pdf",
+            overwrite: overwrite
+        )
+        try PDFMerger.write(pages: pages, to: url, ocr: searchable, onPageProcessed: onPageProcessed)
+        return url
+    }
+
+    /// Re-writes a merged document to the file it already produced (after the
+    /// user reorders or rotates its pages), overwriting it in place — the
+    /// `rewrite` counterpart for the "add to a PDF" case.
+    public static func rewriteMerged(
+        pages: [MergePage],
+        searchable: Bool,
+        to url: URL,
+        onPageProcessed: ((Int) -> Void)? = nil
+    ) throws {
+        try PDFMerger.write(pages: pages, to: url, ocr: searchable, onPageProcessed: onPageProcessed)
+    }
+
     private static func writeImage(_ page: ScannedPage, format: OutputFormat, to url: URL) throws {
         guard let uti = format.imageUTI,
               let destination = CGImageDestinationCreateWithURL(url as CFURL, uti, 1, nil) else {

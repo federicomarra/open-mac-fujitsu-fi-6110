@@ -2,6 +2,7 @@ import Foundation
 import CoreGraphics
 import CoreText
 import ImageIO
+import PDFKit
 import ScannerCore
 
 // Developer CLI to exercise ScannerCore against the real scanner without the GUI.
@@ -189,6 +190,71 @@ do {
         try ScanWriter.rewrite(pages: pgs, format: fmt, to: [URL(fileURLWithPath: target)],
                                onPageProcessed: { print("  processed page \($0)") })
         print("rewrote \(target)")
+
+    case "merge":
+        // merge <base.pdf> <out.pdf> <img...> [--ocr]
+        // Exercises PDFMerger the way "add to a PDF" does: the base document's
+        // pages are copied through untouched, the images are appended at the
+        // end. Prints per-page text so you can see the original text survived
+        // and only the appended pages got the OCR layer.
+        var basePath: String? = nil
+        var mergeTarget: String? = nil
+        var mergeImages: [String] = []
+        var mergeOCR = false
+        var k = 1
+        while k < arguments.count {
+            switch arguments[k] {
+            case "--ocr":
+                mergeOCR = true
+            default:
+                if basePath == nil {
+                    basePath = arguments[k]
+                } else if mergeTarget == nil {
+                    mergeTarget = arguments[k]
+                } else {
+                    mergeImages.append(arguments[k])
+                }
+            }
+            k += 1
+        }
+        guard let base = basePath, let target = mergeTarget else {
+            print("usage: merge <base.pdf> <out.pdf> <img...> [--ocr]"); exit(2)
+        }
+        guard let baseData = try? Data(contentsOf: URL(fileURLWithPath: base)),
+              let baseDocument = PDFDocument(data: baseData) else {
+            print("cannot read \(base)"); exit(1)
+        }
+        var mergePages: [MergePage] = []
+        for p in 0..<baseDocument.pageCount {
+            guard let page = baseDocument.page(at: p) else { continue }
+            mergePages.append(.imported(page))
+        }
+        let importedCount = mergePages.count
+        for (n, file) in mergeImages.enumerated() {
+            guard let source = CGImageSourceCreateWithURL(URL(fileURLWithPath: file) as CFURL, nil),
+                  let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+                print("cannot read \(file)"); exit(1)
+            }
+            mergePages.append(.scanned(ScannedPage(image: image, dpi: 200, index: n + 1)))
+        }
+        try PDFMerger.write(
+            pages: mergePages,
+            to: URL(fileURLWithPath: target),
+            ocr: mergeOCR,
+            onPageProcessed: { print("  rendered scanned page \($0)") }
+        )
+        guard let merged = PDFDocument(url: URL(fileURLWithPath: target)) else {
+            print("cannot reopen \(target)"); exit(1)
+        }
+        print("wrote \(target): \(merged.pageCount) pages "
+              + "(\(importedCount) imported + \(mergeImages.count) scanned)")
+        for p in 0..<merged.pageCount {
+            let text = (merged.page(at: p)?.string ?? "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .replacingOccurrences(of: "\n", with: " ")
+            let kind = p < importedCount ? "imported" : "scanned"
+            print("  page \(p + 1) [\(kind)] " + (text.isEmpty ? "no text" : "text: \(text.prefix(48))…"))
+        }
 
     case "rotate":
         // rotate <in> <out> left|right|flip — exercise ImageRotator.

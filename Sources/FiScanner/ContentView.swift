@@ -10,9 +10,24 @@ struct ContentView: View {
         HStack(spacing: 0) {
             PagesArea(model: model)
                 .frame(minWidth: 460, maxWidth: .infinity, maxHeight: .infinity)
+                // Each alert sits on a different view: stacking several .alert
+                // modifiers on one view is unreliable on macOS 12.
+                .alert(L("import.confirm.title"), isPresented: $model.pendingImportConfirm) {
+                    Button(L("import.confirm.ok")) { model.importPDF() }
+                    Button(L("button.cancel"), role: .cancel) {}
+                } message: {
+                    Text(L("import.confirm.body"))
+                }
             Divider()
             OptionsPanel(model: model)
                 .frame(width: 280)
+                .alert(L("append.confirm.title"), isPresented: $model.pendingAppendConfirm) {
+                    Button(L("append.confirm.add")) { model.startScan(append: true) }
+                    Button(L("append.confirm.restart")) { model.rescanReplacingScannedPages() }
+                    Button(L("button.cancel"), role: .cancel) {}
+                } message: {
+                    Text(String(format: L("append.confirm.body %d"), model.pageItems.count))
+                }
         }
         .frame(minWidth: 800, minHeight: 560)
         .alert(
@@ -43,7 +58,7 @@ private struct PagesArea: View {
                 EmptyState(model: model)
             } else {
                 VStack(spacing: 0) {
-                    reorderToolbar
+                    pagesToolbar
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(Array(model.pageItems.enumerated()), id: \.element.id) { index, item in
@@ -55,40 +70,86 @@ private struct PagesArea: View {
                 }
             }
         }
+        .alert(
+            String(format: L("page.delete.confirm %d"), model.deleteCandidatePosition),
+            isPresented: Binding(
+                get: { model.deleteCandidateID != nil },
+                set: { if !$0 { model.cancelDeletePage() } }
+            )
+        ) {
+            Button(L("page.delete.ok"), role: .destructive) { model.confirmDeletePage() }
+            Button(L("button.cancel"), role: .cancel) { model.cancelDeletePage() }
+        } message: {
+            Text(L("page.delete.body"))
+        }
     }
 
     @ViewBuilder
-    private var reorderToolbar: some View {
-        if model.pageItems.count > 1 {
+    private var pagesToolbar: some View {
+        if !model.pageItems.isEmpty {
             VStack(spacing: 8) {
                 HStack(spacing: 8) {
-                    Image(systemName: "hand.draw")
-                        .foregroundColor(.secondary)
-                    Text(L("pages.reorderHint"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-                HStack(spacing: 8) {
+                    if model.pageItems.count > 1 {
+                        Image(systemName: "hand.draw")
+                            .foregroundColor(.secondary)
+                        Text(L("pages.reorderHint"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                     Spacer()
                     Button {
-                        model.flipAllPages()
+                        model.clearPages()
                     } label: {
-                        Label(L("button.flipAll"), systemImage: "arrow.triangle.2.circlepath")
+                        Label(L("button.clear"), systemImage: "trash")
                     }
-                    Button {
-                        model.reversePages()
-                    } label: {
-                        Label(L("button.reverse"), systemImage: "arrow.up.arrow.down")
-                    }
+                    .controlSize(.small)
+                    .disabled(model.activity != .idle)
                 }
-                .controlSize(.small)
-                .disabled(!model.canReorder)
+                // With a PDF loaded these two act on the scanned pages only, so
+                // their labels say so — and they stay off until something has
+                // actually been scanned.
+                if model.pageItems.count > 1 {
+                    HStack(spacing: 8) {
+                        Spacer()
+                        Button {
+                            model.flipAllPages()
+                        } label: {
+                            Label(
+                                model.hasImportedPDF ? L("button.flipScans") : L("button.flipAll"),
+                                systemImage: "arrow.triangle.2.circlepath"
+                            )
+                        }
+                        .disabled(!model.canFlipInBulk)
+                        Button {
+                            model.reversePages()
+                        } label: {
+                            Label(
+                                model.hasImportedPDF ? L("button.reverseScans") : L("button.reverse"),
+                                systemImage: "arrow.up.arrow.down"
+                            )
+                        }
+                        .disabled(!model.canReverseInBulk)
+                    }
+                    .controlSize(.small)
+                    .lineLimit(1)
+                }
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
             Divider()
         }
+    }
+
+    /// Marks the pages that come from the PDF the user picked, so it's clear
+    /// where the existing document ends and the new scan begins.
+    private var importedBadge: some View {
+        Text("PDF")
+            .font(.caption2.weight(.bold))
+            .foregroundColor(.white)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(Capsule().fill(Color.accentColor.opacity(0.9)))
+            .padding(6)
     }
 
     private func pageCell(item: PageItem, position: Int) -> some View {
@@ -100,6 +161,9 @@ private struct PagesArea: View {
                 .overlay(
                     Rectangle().stroke(Color.black.opacity(0.15), lineWidth: 1)
                 )
+                .overlay(alignment: .topTrailing) {
+                    if item.isImported { importedBadge }
+                }
                 .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
                 .opacity(model.draggingPageID == item.id ? 0.4 : 1)
             Text(String(format: L("page.caption %d"), position))
@@ -129,6 +193,12 @@ private struct PagesArea: View {
                 model.rotatePage(id: item.id, .flip)
             } label: {
                 Label(L("rotate.flip"), systemImage: "arrow.triangle.2.circlepath")
+            }
+            Divider()
+            Button(role: .destructive) {
+                model.requestDeletePage(id: item.id)
+            } label: {
+                Label(L("page.delete"), systemImage: "trash")
             }
         }
     }
@@ -178,6 +248,17 @@ private struct EmptyState: View {
             case .searching:
                 Text(L("status.searching"))
                     .foregroundColor(.secondary)
+            }
+            // Picking a PDF doesn't need the scanner, so this is offered in
+            // every state — you can load the document while it warms up.
+            if model.canImportPDF {
+                Button {
+                    model.requestImportPDF()
+                } label: {
+                    Label(L("button.addToPDF"), systemImage: "doc.badge.plus")
+                }
+                .controlSize(.large)
+                .padding(.top, 8)
             }
         }
         .padding(40)
@@ -269,10 +350,16 @@ private struct OptionsPanel: View {
         LabeledPicker(label: L("panel.format"), selection: $model.format) {
             Text("PDF").tag(OutputFormat.pdf)
             Text(L("format.searchablePDF")).tag(OutputFormat.searchablePDF)
-            Text("JPEG").tag(OutputFormat.jpeg)
-            Text("PNG").tag(OutputFormat.png)
-            Text("TIFF").tag(OutputFormat.tiff)
+            // Adding to an existing PDF can only produce a PDF, so the image
+            // formats step aside while a document is loaded.
+            if !model.hasImportedPDF {
+                Text("JPEG").tag(OutputFormat.jpeg)
+                Text("PNG").tag(OutputFormat.png)
+                Text("TIFF").tag(OutputFormat.tiff)
+            }
         }
+
+        basePDFControl
 
         VStack(alignment: .leading, spacing: 4) {
             Text(L("panel.saveto")).font(.caption).foregroundColor(.secondary)
@@ -298,6 +385,48 @@ private struct OptionsPanel: View {
         }
 
         Toggle(L("panel.overwrite"), isOn: $model.overwrite)
+    }
+
+    /// "Add to a PDF": picks a document whose pages the new scan is appended to.
+    /// Choosing one points Save to / Name / Overwrite at that very file.
+    @ViewBuilder
+    private var basePDFControl: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(L("panel.appendPDF")).font(.caption).foregroundColor(.secondary)
+            HStack(spacing: 6) {
+                Button {
+                    model.requestImportPDF()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "doc.badge.plus")
+                        Text(model.importedPDFName ?? L("panel.appendPDF.choose"))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .disabled(!model.canImportPDF)
+                if model.isImporting {
+                    ProgressView()
+                        .controlSize(.small)
+                } else if model.hasImportedPDF {
+                    Button {
+                        model.removeImportedPDF()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help(L("panel.appendPDF.remove"))
+                }
+            }
+            if !model.formatIsPDF {
+                Text(L("panel.appendPDF.pdfOnly"))
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        }
     }
 
     private func folderButton(name: String, path: FileManager.SearchPathDirectory) -> some View {
@@ -342,7 +471,7 @@ private struct OptionsPanel: View {
                         Button(L("button.clear")) { model.clearPages() }
                     }
                     Spacer()
-                    Button(L("button.scan")) { model.startScan() }
+                    Button(L("button.scan")) { model.requestScan() }
                         .keyboardShortcut(.defaultAction)
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)

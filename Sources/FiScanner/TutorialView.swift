@@ -17,6 +17,7 @@ struct TutorialView: View {
             Step(icon: "doc.text.magnifyingglass", title: L("tut.format.t"), body: L("tut.format.b")),
             Step(icon: "wand.and.stars", title: L("tut.extras.t"), body: L("tut.extras.b")),
             Step(icon: "arrow.up.arrow.down", title: L("tut.arrange.t"), body: L("tut.arrange.b")),
+            Step(icon: "doc.badge.plus", title: L("tut.append.t"), body: L("tut.append.b")),
             Step(icon: "folder", title: L("tut.save.t"), body: L("tut.save.b")),
             Step(icon: "gearshape", title: L("tut.defaults.t"), body: L("tut.defaults.b")),
             Step(icon: "exclamationmark.triangle", title: L("tut.trouble.t"), body: L("tut.trouble.b")),

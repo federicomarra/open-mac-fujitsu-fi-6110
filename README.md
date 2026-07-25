@@ -29,7 +29,10 @@ left, options on the right, one big Scan button.
 - Auto-straighten (deskew) and blank-page skipping (done by the SANE backend)
 - Auto-rotate upside-down pages — detected on-device from the text via Apple
   Vision (both faces of a duplex sheet flip together)
-- Reorder or reverse pages after scanning — the saved file is rewritten in place
+- Reorder, reverse, rotate or delete pages after scanning — the saved file is
+  rewritten in place
+- Add new scans to the end of an existing PDF — the original pages are copied
+  through untouched, keeping their real text and quality
 - Optional overwrite mode, or auto-numbered filenames that never clobber
 - No drivers, no Homebrew, no setup — fully self-contained .app
 

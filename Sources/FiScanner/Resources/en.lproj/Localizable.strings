@@ -32,6 +32,12 @@
 "name.default" = "Scan";
 "panel.overwrite" = "Overwrite the file if it already exists";
 
+/* Add to an existing PDF */
+"panel.appendPDF" = "Add to a PDF";
+"panel.appendPDF.choose" = "Choose a PDF…";
+"panel.appendPDF.remove" = "Remove the PDF";
+"panel.appendPDF.pdfOnly" = "Available only with the PDF format.";
+
 /* Buttons */
 "button.scan" = "Scan";
 "button.cancel" = "Cancel";
@@ -39,12 +45,20 @@
 "button.showInFinder" = "Show in Finder";
 "button.reverse" = "Reverse order";
 "button.flipAll" = "Flip all";
+/* Same two buttons while a PDF is loaded: they act on the scanned pages only */
+"button.reverseScans" = "Reverse the order of the newly scanned pages";
+"button.flipScans" = "Flip the newly scanned pages";
+"button.addToPDF" = "Add to an existing PDF…";
 
 /* Pages */
 "pages.reorderHint" = "Drag the pages to reorder";
 "rotate.right" = "Rotate right";
 "rotate.left" = "Rotate left";
 "rotate.flip" = "Flip (180°)";
+"page.delete" = "Delete page";
+"page.delete.confirm %d" = "Delete page %d?";
+"page.delete.body" = "The page is removed from the document and the saved file is updated right away. This can't be undone — you would have to scan the page again.";
+"page.delete.ok" = "Delete";
 
 /* Progress */
 "progress.page %d" = "Scanning page %d…";
@@ -57,12 +71,22 @@
 "msg.savedMultiple %d" = "%d files";
 "page.caption %d" = "Page %d";
 
+/* Confirmations */
+"append.confirm.title" = "Add the new pages to this document?";
+"append.confirm.body %d" = "The sheets you're about to scan will be added after the %d pages already here.";
+"append.confirm.add" = "Add at the end";
+"append.confirm.restart" = "Replace the scanned pages";
+"import.confirm.title" = "Replace the pages shown?";
+"import.confirm.body" = "The pages currently in the list will be removed from the window. Files already saved are not touched.";
+"import.confirm.ok" = "Choose the PDF…";
+
 /* Errors */
 "error.title" = "Scan Problem";
 "error.noScanner" = "The scanner is not connected. Check the USB cable and that it is turned on.";
 "error.jam" = "Paper jam. Open the scanner, remove the pages, and try again.";
 "error.coverOpen" = "The scanner cover is open. Close it and try again.";
 "error.decode" = "The scanned image could not be processed.";
+"error.pdfOpen" = "This PDF could not be opened. It may be password-protected or damaged.";
 "error.generic %@" = "Something went wrong: %@";
 
 /* Default document name: <date>-<suffix>, e.g. 2026-07-23-scan */
@@ -96,7 +120,9 @@
 "tut.extras.t" = "Handy options";
 "tut.extras.b" = "“Rotate pages automatically” detects a sheet fed upside-down and turns it the right way up. “Straighten pages automatically” corrects sheets that went in slightly skewed. “Skip blank pages” drops empty backsides when scanning both sides.";
 "tut.arrange.t" = "Rearrange the pages";
-"tut.arrange.b" = "After scanning you can drag the pages to change their order, or press “Reverse order” to reverse it. “Flip all” rotates every page 180° at once. Double-click a page to rotate it 180°; right-click it to rotate right, left, or flip. The saved file is updated automatically.";
+"tut.arrange.b" = "After scanning you can drag the pages to change their order, or press “Reverse order” to reverse it. “Flip all” rotates every page 180° at once. Double-click a page to rotate it 180°; right-click it to rotate right, left, flip it, or delete it (the app asks first). The saved file is updated automatically.";
+"tut.append.t" = "Add scans to an existing PDF";
+"tut.append.b" = "Want to add sheets to a PDF you already have? Press “Add to a PDF” on the right (or the button on the opening screen) and choose the document: its pages appear in the window with a PDF badge, and the sheets you scan are added at the end. The original document's pages are copied untouched, text included. The app saves the result onto the PDF you picked: if you'd rather not replace it, switch off “Overwrite the file if it already exists” and a new file is created instead. Press “Scan” again and the app asks whether to add the new sheets at the end or redo the scan. With a PDF loaded, the two buttons at the top act on the newly scanned pages only: the original document's pages never move and never turn. You can still turn a single PDF page with a double-click or the right-click menu.";
 "tut.save.t" = "Where the files go";
 "tut.save.b" = "Under “Save to” pick the folder (usually Documents). “Name” already contains today's date: change it however you like. If a file with the same name already exists, a new one is created with -1, -2… added, without overwriting the old one. Turn on “Overwrite the file if it already exists” if you'd rather replace it.";
 "tut.defaults.t" = "Set your defaults";

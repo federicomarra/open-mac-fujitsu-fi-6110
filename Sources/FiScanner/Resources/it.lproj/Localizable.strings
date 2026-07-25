@@ -32,6 +32,12 @@
 "name.default" = "Scansione";
 "panel.overwrite" = "Sovrascrivi il file se esiste già";
 
+/* Add to an existing PDF */
+"panel.appendPDF" = "Aggiungi a un PDF";
+"panel.appendPDF.choose" = "Scegli un PDF…";
+"panel.appendPDF.remove" = "Togli il PDF";
+"panel.appendPDF.pdfOnly" = "Disponibile solo con il formato PDF.";
+
 /* Buttons */
 "button.scan" = "Scansiona";
 "button.cancel" = "Annulla";
@@ -39,12 +45,20 @@
 "button.showInFinder" = "Mostra nel Finder";
 "button.reverse" = "Inverti ordine";
 "button.flipAll" = "Capovolgi tutte";
+/* Same two buttons while a PDF is loaded: they act on the scanned pages only */
+"button.reverseScans" = "Inverti l'ordine delle pagine appena scansionate";
+"button.flipScans" = "Capovolgi le pagine appena scansionate";
+"button.addToPDF" = "Aggiungi a un PDF esistente…";
 
 /* Pages */
 "pages.reorderHint" = "Trascina le pagine per riordinarle";
 "rotate.right" = "Ruota a destra";
 "rotate.left" = "Ruota a sinistra";
 "rotate.flip" = "Capovolgi (180°)";
+"page.delete" = "Elimina pagina";
+"page.delete.confirm %d" = "Eliminare la pagina %d?";
+"page.delete.body" = "La pagina viene tolta dal documento e il file salvato viene aggiornato subito. Non si può annullare: per riaverla dovresti scansionarla di nuovo.";
+"page.delete.ok" = "Elimina";
 
 /* Progress */
 "progress.page %d" = "Scansione pagina %d…";
@@ -57,12 +71,22 @@
 "msg.savedMultiple %d" = "%d file";
 "page.caption %d" = "Pagina %d";
 
+/* Confirmations */
+"append.confirm.title" = "Aggiungere le nuove pagine a questo documento?";
+"append.confirm.body %d" = "I fogli che stai per acquisire verranno aggiunti dopo le %d pagine già presenti.";
+"append.confirm.add" = "Aggiungi in fondo";
+"append.confirm.restart" = "Sostituisci le pagine scansionate";
+"import.confirm.title" = "Sostituire le pagine mostrate?";
+"import.confirm.body" = "Le pagine attualmente nell'elenco verranno tolte dalla finestra. I file già salvati non vengono toccati.";
+"import.confirm.ok" = "Scegli il PDF…";
+
 /* Errors */
 "error.title" = "Problema di scansione";
 "error.noScanner" = "Lo scanner non è collegato. Controlla il cavo USB e che sia acceso.";
 "error.jam" = "Carta inceppata. Apri lo scanner, rimuovi i fogli e riprova.";
 "error.coverOpen" = "Lo sportello dello scanner è aperto. Chiudilo e riprova.";
 "error.decode" = "Non è stato possibile elaborare l'immagine scansionata.";
+"error.pdfOpen" = "Non è stato possibile aprire questo PDF. Potrebbe essere protetto da password o danneggiato.";
 "error.generic %@" = "Si è verificato un errore: %@";
 
 /* Default document name: <date>-<suffix>, e.g. 2026-07-23-scansione */
@@ -96,7 +120,9 @@
 "tut.extras.t" = "Opzioni utili";
 "tut.extras.b" = "«Ruota automaticamente le pagine» riconosce un foglio inserito sottosopra e lo gira nel verso giusto. «Raddrizza automaticamente le pagine» corregge i fogli entrati un po' storti. «Salta le pagine vuote» elimina i retro bianchi quando acquisisci in fronte-retro.";
 "tut.arrange.t" = "Riordina le pagine";
-"tut.arrange.b" = "Dopo la scansione puoi trascinare le pagine per cambiarne l'ordine, oppure premere «Inverti ordine» per invertirlo. «Capovolgi tutte» gira di 180° tutte le pagine insieme. Un doppio clic su una pagina la ruota di 180°; con il tasto destro puoi ruotarla a destra, a sinistra o capovolgerla. Il file salvato viene aggiornato automaticamente.";
+"tut.arrange.b" = "Dopo la scansione puoi trascinare le pagine per cambiarne l'ordine, oppure premere «Inverti ordine» per invertirlo. «Capovolgi tutte» gira di 180° tutte le pagine insieme. Un doppio clic su una pagina la ruota di 180°; con il tasto destro puoi ruotarla a destra, a sinistra, capovolgerla oppure eliminarla (l'app chiede conferma). Il file salvato viene aggiornato automaticamente.";
+"tut.append.t" = "Aggiungi le scansioni a un PDF esistente";
+"tut.append.b" = "Vuoi aggiungere dei fogli a un PDF che hai già? Premi «Aggiungi a un PDF» a destra (o il pulsante nella schermata iniziale) e scegli il documento: le sue pagine appaiono nella finestra con il contrassegno PDF, e i fogli che acquisisci vengono aggiunti in fondo. Le pagine del documento originale restano intatte, con il loro testo. L'app salva il risultato sul PDF che hai scelto: se non vuoi sostituirlo, togli la spunta a «Sovrascrivi il file se esiste già» e verrà creato un file nuovo. Premendo di nuovo «Scansiona» l'app ti chiede se aggiungere i nuovi fogli in fondo o rifare la scansione. Con un PDF caricato i due pulsanti in alto agiscono solo sulle pagine appena scansionate: quelle del documento originale non si spostano e non si girano. Se vuoi girare una singola pagina del PDF puoi comunque farlo con il doppio clic o il tasto destro.";
 "tut.save.t" = "Dove finiscono i file";
 "tut.save.b" = "In «Salva in» scegli la cartella (di solito Documenti). In «Nome» c'è già la data di oggi: puoi cambiarla come preferisci. Se esiste già un file con lo stesso nome, ne viene creato uno nuovo aggiungendo -1, -2… senza sovrascrivere quello vecchio. Attiva «Sovrascrivi il file se esiste già» se invece preferisci sostituirlo.";
 "tut.defaults.t" = "Imposta i tuoi valori predefiniti";
